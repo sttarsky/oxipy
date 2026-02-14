@@ -8,3 +8,6 @@ wheels/
 main.py
 # Virtual environments
 .venv
+
+# etc files
+*.txt
