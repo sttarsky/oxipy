@@ -1,6 +1,7 @@
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from .interfaces import BaseDevice, device_registry
 
 if TYPE_CHECKING:
     from requests import Session
@@ -10,7 +11,7 @@ class NodeConfig:
     def __init__(self, session: "Session", full_name: str, model: str, base_url: str):
         self._session = session
         self._full_name = full_name
-        self._model = model
+        self._model = model.lower()
         self._url = f"{base_url}/node/fetch/{full_name}"
         self._device: type[BaseDevice] = device_registry.get(self._model.lower())
         if self._device is None:
@@ -19,7 +20,6 @@ class NodeConfig:
 
     @cached_property
     def _response(self):
-        log.debug(f"Fetching config from {self._url}")
         response = self._session.get(self._url)
         response.raise_for_status()
         return response
