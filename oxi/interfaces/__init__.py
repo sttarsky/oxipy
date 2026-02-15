@@ -9,7 +9,12 @@ def register_parser(
     name: list[str],
 ) -> Callable[[Type[BaseDevice]], Type[BaseDevice]]:
     def wrapper(cls):
-        for item in name:
+        name_list = []
+        if isinstance(name, str):
+            name_list.append(name)
+        else:
+            name_list.extend(name)
+        for item in name_list:
             device_registry[item.lower()] = cls
         return cls
 
