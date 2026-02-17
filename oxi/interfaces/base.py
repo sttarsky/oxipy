@@ -53,9 +53,8 @@ class BaseDevice(ABC):
         return raw
 
     def parse(self) -> Device:
-        data = {
-            "system": self.system(),
-            "interfaces": self.interfaces(),
-            "vlans": self.vlans(),
-        }
-        return Device(**data)
+        return Device(
+            system=self.system(),
+            interfaces=self.interfaces(),
+            vlans=self.vlans(),
+        )
