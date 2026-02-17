@@ -3,8 +3,9 @@ from pydantic import BaseModel, Field
 
 
 class Interfaces(BaseModel):
-    ip_address: IPv4Address
-    mask: int
+    name: str
+    ip_address: IPv4Address | None = None
+    mask: int | None = None
     description: str
 
 

@@ -25,13 +25,47 @@ class BaseDevice(ABC):
         """
 
     @abstractmethod
-    def vlans(self) -> list["Vlans"]: ...
+    def vlans(self) -> list["Vlans"]:
+        f"""
+        Parse VLAN configuration from self._raw['vlans'].
+
+        Expected raw structure:
+            [{"id": 10, "description": "MGMT"}, {"id": 15, "name": "SSH"}, ...]
+
+        Returns:
+            list[Vlans]: список VLAN из секции vlans,
+                пустой список если секция отсутствует.
+
+        Raises:
+            ValueError: если _raw содержит некорректные данные.
+        """
+        ...
 
     @abstractmethod
-    def interfaces(self) -> list["Interfaces"]: ...
+    def interfaces(self) -> list["Interfaces"]:
+        f"""
+        Parse Interface configuration from self._raw['interfaces'].
+
+        Expected raw structure:
+            [{"name": "GEthernet1/0/1", "ip_address": "192.168.1.1", "mask": "24", "description": "IPBB interface"}]
+        
+        Raises:
+            ValueError: если _raw содержит некорректные данные.
+        """
+        ...
 
     @abstractmethod
-    def system(self) -> "System": ...
+    def system(self) -> "System":
+        """
+        Parse System configuration from self._raw['system'].
+
+        Expected raw structure:
+            {"model":"RB951Ui-2nD", serial_number: "B88C0B31117B", "version": "7.12.1"}
+
+        Raises:
+            ValueError: если _raw содержит некорректные данные.
+        """
+        ...
 
     def _load_template(self):
         path = Path(__file__).parent / "template" / self.template
