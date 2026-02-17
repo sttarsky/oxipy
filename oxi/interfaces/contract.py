@@ -16,10 +16,10 @@ class System(BaseModel):
 
 class Vlans(BaseModel):
     id: int
-    name: str = Field(alias="description")
+    name: str | None = Field(default=None, alias="description")
 
 
 class Device(BaseModel):
     system: System
-    interfaces: Interfaces
-    vlans: Vlans
+    interfaces: list[Interfaces] = []
+    vlans: list[Vlans] = []
