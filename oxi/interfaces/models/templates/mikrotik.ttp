@@ -1,7 +1,31 @@
 <doc>
 </doc>
-<var>
-</var>
+<template>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": ""
+}
+default_vlans = {
+    "id": "",
+    "name": ""
+}
+</vars>
 
-<group>
+
+<group name="system" default="default_system">
+# version: {{ version }} {{ ignore }}
+# model = {{ model }}
+# serial number = {{ serial_number }}
 </group>
+
+<group name="interfaces">
+/ip address
+add address={{ address }} interface={{ interface }} network={{ network }}
+</group>
+
+<group name="vlans" default="default_vlans">
+/vlans add {{ id }} name= {{ name }}
+</group>
+
+</template>

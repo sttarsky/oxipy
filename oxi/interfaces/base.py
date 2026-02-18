@@ -68,8 +68,10 @@ class BaseDevice(ABC):
         ...
 
     def _load_template(self):
-        path = Path(__file__).parent / "template" / self.template
+        path = Path(__file__).parent / "models" / "templates" / self.template
         if not path.exists():
+            print("-" * 12)
+            print(path)
             raise FileNotFoundError(f"Template {self.template} not found")
         return path.read_text(encoding="utf-8")
 
