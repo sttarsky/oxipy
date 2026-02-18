@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Interfaces(BaseModel):
@@ -16,6 +16,8 @@ class System(BaseModel):
 
 
 class Vlans(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     vlan_id: int
     name: str | None = Field(default=None, alias="description")
 

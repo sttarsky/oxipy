@@ -12,11 +12,9 @@ class Mikrotik(BaseDevice):
         return System(**systems)
 
     def interfaces(self) -> "Interfaces":
-        print(self._raw.get("interfaces"))
         return [Interfaces(**item) for item in self._raw.get("interfaces")]
 
     def vlans(self) -> list["Vlans"]:
-        print(self._raw.get("vlans"))
         return [Vlans(**item) for item in self._raw.get("vlans")]
 
 
@@ -24,5 +22,4 @@ if __name__ == "__main__":
     with open("../../test.txt") as file:
         data = file.read()
     mikr = Mikrotik(data)
-    mikr.parse()
-    print(mikr)
+    print(mikr.parse().json())

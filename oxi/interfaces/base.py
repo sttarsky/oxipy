@@ -28,7 +28,7 @@ class BaseDevice(ABC):
 
     @abstractmethod
     def vlans(self) -> list["Vlans"]:
-        f"""
+        """
         Parse VLAN configuration from self._raw['vlans'].
 
         Expected raw structure:
@@ -45,7 +45,7 @@ class BaseDevice(ABC):
 
     @abstractmethod
     def interfaces(self) -> list["Interfaces"]:
-        f"""
+        """
         Parse Interface configuration from self._raw['interfaces'].
 
         Expected raw structure:
@@ -70,6 +70,7 @@ class BaseDevice(ABC):
         ...
 
     def _load_template(self):
+        """Подгрузка темплейтов из папки models/templates"""
         path = Path(__file__).parent / "models" / "templates" / self.template
         if not path.exists():
             print("-" * 12)
@@ -96,6 +97,7 @@ class BaseDevice(ABC):
             )
 
     def _run_ttp(self) -> dict:
+        """ Основной парсер """
         p = ttp(data=self.config, template=self._loaded_template)
         p.parse()
         raw: dict = p.result()[0][0]
