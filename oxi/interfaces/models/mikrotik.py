@@ -1,10 +1,6 @@
-import re
-from typing import TYPE_CHECKING
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
-
-if TYPE_CHECKING:
-    from oxi.interfaces.contract import Interfaces, System, Vlans
+from oxi.interfaces.contract import Interfaces, System, Vlans
 
 
 @register_parser(["routeros", "ros", "mikrotik"])
@@ -12,16 +8,16 @@ class Mikrotik(BaseDevice):
     template = "mikrotik.ttp"
 
     def system(self) -> "System":
-        print(self._raw["system"])
-        print("-" * 12)
+        systems = self._raw.get("system")
+        return System(**systems)
 
     def interfaces(self) -> "Interfaces":
-        print(f"{self._raw["interfaces"]=}")
-        print("-" * 12)
+        print(self._raw.get("interfaces"))
+        return [Interfaces(**item) for item in self._raw.get("interfaces")]
 
     def vlans(self) -> list["Vlans"]:
-        raw = self._raw.get("vlans", [])
-        print(raw)
+        print(self._raw.get("vlans"))
+        return [Vlans(**item) for item in self._raw.get("vlans")]
 
 
 if __name__ == "__main__":
@@ -29,4 +25,4 @@ if __name__ == "__main__":
         data = file.read()
     mikr = Mikrotik(data)
     mikr.parse()
-    print(mikr.load)
+    print(mikr)

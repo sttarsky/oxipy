@@ -6,7 +6,7 @@ class Interfaces(BaseModel):
     name: str
     ip_address: IPv4Address | None = None
     mask: int | None = None
-    description: str
+    description: str | None = None
 
 
 class System(BaseModel):
@@ -16,7 +16,7 @@ class System(BaseModel):
 
 
 class Vlans(BaseModel):
-    id: int
+    vlan_id: int
     name: str | None = Field(default=None, alias="description")
 
 
