@@ -1,3 +1,4 @@
+import re
 from typing import TYPE_CHECKING
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
@@ -19,11 +20,13 @@ class Mikrotik(BaseDevice):
         print("-" * 12)
 
     def vlans(self) -> list["Vlans"]:
-        print(f"{self._raw["vlans"]=}")
-        print("-" * 12)
+        raw = self._raw.get("vlans", [])
+        print(raw)
 
 
 if __name__ == "__main__":
-    mikr = Mikrotik()
-    mikr.run()
+    with open("../../test.txt") as file:
+        data = file.read()
+    mikr = Mikrotik(data)
+    mikr.parse()
     print(mikr.load)

@@ -1,31 +1,47 @@
 <doc>
+    some templates
 </doc>
-<template>
 <vars>
 default_system = {
     "model": "",
     "serial_number": ""
 }
-default_vlans = {
-    "id": "",
-    "name": ""
+default_interfaces = {
+    "disabled": "False"
 }
+default_vlans = {
+    "disabled": "False",
+    "mtu": None
+    }
 </vars>
 
-
 <group name="system" default="default_system">
-# version: {{ version }} {{ ignore }}
+# version: {{ version }}{{ ignore('.*') }}
 # model = {{ model }}
 # serial number = {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces" default="default_interfaces">
 /ip address
-add address={{ address }} interface={{ interface }} network={{ network }}
+## not disabled and no comment
+add address={{ ip | _start_ }}/{{ mask }} interface={{ interface }} network={{ network }}
+## not disabled and comment with/without quotes
+add address={{ ip | _start_ }}/{{ mask }} comment={{ comment | ORPHRASE | exclude("disabled=") | strip('"')}} interface={{ interface }} network={{ network }}
+## disabled no comment
+add address={{ ip | _start_ }}/{{ mask }} disabled={{ disabled | replace("yes","True") | strip('"')}} interface={{ interface }} network={{ network }}
+## disabled with comment with/without quotes
+add address={{ ip | _start_ }}/{{ mask }} comment={{ comment | ORPHRASE | exclude("disabled=") | strip('"') }} disabled={{ disabled }} interface={{ interface }} network={{ network }}
 </group>
 
-<group name="vlans" default="default_vlans">
-/vlans add {{ id }} name= {{ name }}
+<group name="vlans">
+/interface vlan {{ _start_ }}
+## not disabled and no comment
+add interface={{ interface }} name={{ name | ORPHRASE }} vlan-id={{ vlan_id }}
+## not disabled and comment with/without quotes
+add comment={{ comment | ORPHRASE | exclude("disabled=") | strip('"')}} interface={{ interface }} name={{ name | ORPHRASE }} vlan-id={{ vlan_id }}
+## disabled with comment with/without quotes
+add comment={{ comment | ORPHRASE | exclude("disabled=") | strip('"')}} disabled={{ disabled }} interface={{ interface }} name={{ name | ORPHRASE }} vlan-id={{ vlan_id }}
+## disabled no comment
+add interface={{ interface }} name={{ name | ORPHRASE }} vlan-id={{ vlan_id }} disabled={{ disabled }}
 </group>
 
-</template>

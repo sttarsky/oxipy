@@ -1,20 +1,22 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
-
 from ttp import ttp
 from oxi.interfaces.contract import Device
+import xml.etree.ElementTree as ET
 
 if TYPE_CHECKING:
     from oxi.interfaces.contract import Interfaces, System, Vlans
 
 
 class BaseDevice(ABC):
-    _REQUIRED_SECTIONS: frozenset[str] = frozenset({"system", "interfaces", "vlans"})
+    _REQUIRED_SECTIONS: frozenset[str] = frozenset({"system", "interfaces"})
+    _OPTIONAL_SECTIONS: frozenset[str] = frozenset({"vlans"})
 
     def __init__(self, config: str):
         self.config: str = config
         self._loaded_template = self._load_template()
+        self._validate_template_groups()
         self._raw: dict = self._run_ttp()
 
     @property
@@ -74,6 +76,24 @@ class BaseDevice(ABC):
             print(path)
             raise FileNotFoundError(f"Template {self.template} not found")
         return path.read_text(encoding="utf-8")
+
+    def _validate_template_groups(self) -> None:
+        """Проверка что TTP темлпейт имеет декларированные группы для всех требуемых и опциональных секций"""
+        try:
+            root = ET.fromstring(self._loaded_template)
+        except ET.ParseError:
+            root = ET.fromstring(f"<template>{self._loaded_template}</template>")
+
+        declared = {g.get("name") for g in root.iter("group") if g.get("name")}
+        expected = self._REQUIRED_SECTIONS | self._OPTIONAL_SECTIONS
+        missing = expected - declared
+
+        if missing:
+            raise ValueError(
+                f"{self.__class__.__name__}: template '{self.template}' "
+                f"missing group declarations: {sorted(missing)}. "
+                f"Declared groups: {sorted(declared)}"
+            )
 
     def _run_ttp(self) -> dict:
         p = ttp(data=self.config, template=self._loaded_template)
