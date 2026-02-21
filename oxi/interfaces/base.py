@@ -106,7 +106,7 @@ class BaseDevice(ABC):
             raise ValueError(
                 f"{self.__class__.__name__}: TTP template '{self.template}' "
                 f"did not produce required sections: {sorted(missing)}. "
-                f"Got: {sorted(raw.keys())}"
+                f"Got: {(raw.keys())}"
             )
         return raw
 

@@ -1,7 +1,16 @@
 <doc>
 </doc>
-<var>
-</var>
+<vars>
+</vars>
 
-<group>
+<group name="system">
+    ...
+</group>
+
+<group name="interfaces">
+    ...
+</group>
+
+<group name="vlans">
+    ...
 </group>

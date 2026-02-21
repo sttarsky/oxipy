@@ -1,3 +1,4 @@
+import os
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 from oxi.interfaces.contract import Interfaces, System, Vlans
@@ -19,7 +20,8 @@ class Mikrotik(BaseDevice):
 
 
 if __name__ == "__main__":
-    with open("../../test.txt") as file:
+    print(os.path.abspath(os.curdir))
+    with open("./test.txt") as file:
         data = file.read()
     mikr = Mikrotik(data)
     print(mikr.parse().json())
