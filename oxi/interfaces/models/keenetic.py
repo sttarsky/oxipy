@@ -1,7 +1,6 @@
 from ipaddress import ip_interface
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
-from oxi.interfaces.contract import Interfaces, Vlans
 
 
 @register_parser(["NDMS", "keenetic", "KeeneticOS"])
@@ -34,13 +33,13 @@ class Keenetic(BaseDevice):
                 item["description"] = decoded
         return interfaces
 
-    def vlans(self):
-        vlans = self.raw["vlans"]
-        for item in vlans:
-            if item.get("description"):
-                decoded = self._decode_utf(item.get("description", ""))
-                item["description"] = decoded
-        return vlans
+    # def vlans(self):
+    #     vlans = self.raw["vlans"]
+    #     for item in vlans:
+    #         if item.get("description"):
+    #             decoded = self._decode_utf(item.get("description", ""))
+    #             item["description"] = decoded
+    #     return vlans
 
 
 if __name__ == "__main__":

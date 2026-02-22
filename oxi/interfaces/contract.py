@@ -2,27 +2,41 @@ from ipaddress import IPv4Address
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class Interfaces(BaseModel):
-    name: str
-    ip_address: IPv4Address | None = None
-    mask: int | None = None
-    description: str | None = None
+class Base(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class System(BaseModel):
+    """
+    Requred
+    """
+
     model: str
     serial_number: str
     version: str
 
 
-class Vlans(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
+class Interfaces(Base):
+    """
+    Requred
+    """
 
-    vlan_id: int
+    name: str = Field(alias="interface")
+    ip_address: IPv4Address | None = None
+    mask: int | None = None
+    description: str | None = None
+
+
+class Vlans(Base):
+    """
+    Optional
+    """
+
+    vlan_id: int = Field(alias="id")
     name: str | None = Field(default=None, alias="description")
 
 
 class Device(BaseModel):
     system: System
-    interfaces: list[Interfaces] = []
+    interfaces: list[Interfaces]
     vlans: list[Vlans] = []

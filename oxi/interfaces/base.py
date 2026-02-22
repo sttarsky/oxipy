@@ -12,7 +12,9 @@ class BaseDevice(ABC):
 
     def __init__(self, config: str):
         self.config: str = config
+
         self._loaded_template = self._load_template()
+        self._declared_sections = None
         self._validate_template_groups()
         self.raw: dict = self._run_ttp()
 
@@ -20,15 +22,17 @@ class BaseDevice(ABC):
     @abstractmethod
     def template(self) -> str:
         """
-        Returns:
+        Expected structure:
             Название файла с парсером ttp
+        Returns:
+            None
         """
 
     def vlans(self) -> list[dict]:
         """
         Parse VLAN configuration from self.raw['vlans'].
 
-        Expected raw structure:
+        Expected structure:
             [{"id": 10, "description": "MGMT"}, {"id": 15, "name": "SSH"}, ...]
 
         Returns:
@@ -64,15 +68,19 @@ class BaseDevice(ABC):
         """
         return self.raw.get("system", None)
 
-    def _validate_contract(self):
-        optional_vlans = self.vlans()
-        if optional_vlans:
-            optional_vlans = [Vlans(**item) for item in optional_vlans]
-        return {
-            "system": System(**self.system()),
-            "interfaces": [Interfaces(**items) for items in self.interfaces()],
-            "vlans": optional_vlans,
+    def _validate_contract(self) -> dict:
+        system_data = self.system()
+        interfaces_data = self.interfaces() or []
+        result = {
+            "system": System(**system_data),
+            "interfaces": [Interfaces(**item) for item in interfaces_data],
+            "vlans": [],
         }
+
+        if "vlans" in self._declared_sections:
+            vlans_data = self.vlans() or []
+            result["vlans"] = [Vlans(**item) for item in vlans_data]
+        return result
 
     def _load_template(self):
         """Подгрузка темплейтов из папки models/templates"""
@@ -82,20 +90,20 @@ class BaseDevice(ABC):
         return path.read_text(encoding="utf-8")
 
     def _validate_template_groups(self) -> None:
-        """Проверка что TTP темлпейт имеет декларированные группы для всех требуемых и опциональных секций"""
+        """Проверяем только обязательные группы в template."""
         try:
             root = ET.fromstring(self._loaded_template)
         except ET.ParseError:
             root = ET.fromstring(f"<template>{self._loaded_template}</template>")
 
         declared = {g.get("name") for g in root.iter("group") if g.get("name")}
-        expected = self._REQUIRED_SECTIONS | self._OPTIONAL_SECTIONS
-        missing = expected - declared
+        self._declared_sections = declared
 
-        if missing:
+        missing_required = self._REQUIRED_SECTIONS - declared
+        if missing_required:
             raise ValueError(
                 f"{self.__class__.__name__}: template '{self.template}' "
-                f"missing group declarations: {sorted(missing)}. "
+                f"missing required groups: {sorted(missing_required)}. "
                 f"Declared groups: {sorted(declared)}"
             )
 
@@ -108,8 +116,8 @@ class BaseDevice(ABC):
         if missing:
             raise ValueError(
                 f"{self.__class__.__name__}: TTP template '{self.template}' "
-                f"did not produce required sections: {sorted(missing)}. "
-                f"Got: {(raw.keys())}"
+                f"did not produce required groups: {sorted(missing)}. "
+                f"Return only: {(raw.keys())}"
             )
         return raw
 
