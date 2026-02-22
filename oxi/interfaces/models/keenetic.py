@@ -1,16 +1,12 @@
 from ipaddress import ip_interface
-from pprint import pprint
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
-from oxi.interfaces.contract import Interfaces, System, Vlans
+from oxi.interfaces.contract import Interfaces, Vlans
 
 
 @register_parser(["NDMS", "keenetic", "KeeneticOS"])
 class Keenetic(BaseDevice):
     template = "keenetic.ttp"
-
-    def system(self):
-        return System(**self._raw["system"])
 
     def _decode_utf(self, text: str):
         if "\\x" in text:
@@ -25,7 +21,7 @@ class Keenetic(BaseDevice):
         return text
 
     def interfaces(self):
-        interfaces: list[dict] = self._raw["interfaces"]
+        interfaces: list[dict] = self.raw["interfaces"]
         for item in interfaces:
             if item.get("ip_address") and item.get("netmask"):
                 ipaddress = ip_interface(
@@ -36,15 +32,15 @@ class Keenetic(BaseDevice):
             if item.get("description"):
                 decoded = self._decode_utf(item.get("description", ""))
                 item["description"] = decoded
-        return [Interfaces(**item) for item in interfaces]
+        return interfaces
 
     def vlans(self):
-        vlans = self._raw["vlans"]
+        vlans = self.raw["vlans"]
         for item in vlans:
             if item.get("description"):
                 decoded = self._decode_utf(item.get("description", ""))
                 item["description"] = decoded
-        return [Vlans(**item) for item in vlans]
+        return vlans
 
 
 if __name__ == "__main__":

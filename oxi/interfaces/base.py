@@ -1,12 +1,9 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING
 from ttp import ttp
 from oxi.interfaces.contract import Device
 import xml.etree.ElementTree as ET
-
-if TYPE_CHECKING:
-    from oxi.interfaces.contract import Interfaces, System, Vlans
+from oxi.interfaces.contract import Interfaces, System, Vlans
 
 
 class BaseDevice(ABC):
@@ -17,19 +14,19 @@ class BaseDevice(ABC):
         self.config: str = config
         self._loaded_template = self._load_template()
         self._validate_template_groups()
-        self._raw: dict = self._run_ttp()
+        self.raw: dict = self._run_ttp()
 
     @property
     @abstractmethod
     def template(self) -> str:
         """
-        :return:
+        Returns:
+            Название файла с парсером ttp
         """
 
-    @abstractmethod
-    def vlans(self) -> list["Vlans"]:
+    def vlans(self) -> list[dict]:
         """
-        Parse VLAN configuration from self._raw['vlans'].
+        Parse VLAN configuration from self.raw['vlans'].
 
         Expected raw structure:
             [{"id": 10, "description": "MGMT"}, {"id": 15, "name": "SSH"}, ...]
@@ -39,42 +36,48 @@ class BaseDevice(ABC):
                 пустой список если секция отсутствует.
 
         Raises:
-            ValueError: если _raw содержит некорректные данные.
+            ValueError: если raw содержит некорректные данные.
         """
-        ...
+        return self.raw.get("vlans", [])
 
-    @abstractmethod
-    def interfaces(self) -> list["Interfaces"]:
+    def interfaces(self) -> list[dict]:
         """
-        Parse Interface configuration from self._raw['interfaces'].
+        Parse Interface configuration from self.raw['interfaces'].
 
         Expected raw structure:
             [{"name": "GEthernet1/0/1", "ip_address": "192.168.1.1", "mask": "24", "description": "IPBB interface"}]
-        
-        Raises:
-            ValueError: если _raw содержит некорректные данные.
-        """
-        ...
 
-    @abstractmethod
-    def system(self) -> "System":
+        Raises:
+            ValueError: если raw содержит некорректные данные.
         """
-        Parse System configuration from self._raw['system'].
+        return self.raw.get("interfaces", [])
+
+    def system(self) -> dict:
+        """
+        Parse System configuration from self.raw['system'].
 
         Expected raw structure:
             {"model":"RB951Ui-2nD", serial_number: "B88C0B31117B", "version": "7.12.1"}
 
         Raises:
-            ValueError: если _raw содержит некорректные данные.
+            ValueError: если raw содержит некорректные данные.
         """
-        ...
+        return self.raw.get("system", None)
+
+    def _validate_contract(self):
+        optional_vlans = self.vlans()
+        if optional_vlans:
+            optional_vlans = [Vlans(**item) for item in optional_vlans]
+        return {
+            "system": System(**self.system()),
+            "interfaces": [Interfaces(**items) for items in self.interfaces()],
+            "vlans": optional_vlans,
+        }
 
     def _load_template(self):
         """Подгрузка темплейтов из папки models/templates"""
         path = Path(__file__).parent / "models" / "templates" / self.template
         if not path.exists():
-            print("-" * 12)
-            print(path)
             raise FileNotFoundError(f"Template {self.template} not found")
         return path.read_text(encoding="utf-8")
 
@@ -97,7 +100,7 @@ class BaseDevice(ABC):
             )
 
     def _run_ttp(self) -> dict:
-        """ Основной парсер """
+        """Основной парсер"""
         p = ttp(data=self.config, template=self._loaded_template)
         p.parse()
         raw: dict = p.result()[0][0]
@@ -111,8 +114,4 @@ class BaseDevice(ABC):
         return raw
 
     def parse(self) -> Device:
-        return Device(
-            system=self.system(),
-            interfaces=self.interfaces(),
-            vlans=self.vlans(),
-        )
+        return Device(**self._validate_contract())

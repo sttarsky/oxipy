@@ -30,7 +30,7 @@ class NodeConfig:
 
     @property
     def json(self):
-        return self._response.json()
+        return self._parsed_data.json()
 
     def __str__(self):
         return self.text
