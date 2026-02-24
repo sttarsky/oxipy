@@ -38,8 +38,8 @@ class NodeConfig:
     def vlans(self):
         return self._parsed_data.vlans
 
-    def l3interfaces(self):
-        return self._parsed_data.l3interfaces
+    def interfaces(self):
+        return self._parsed_data.interfaces
 
-    def vlaninterfaces(self):
-        return self._parsed_data.vlaninterfaces
+    def system(self):
+        return self._parsed_data.system
