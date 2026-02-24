@@ -1,10 +1,34 @@
 from functools import cached_property
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Generic, TypeVar
+
+from pydantic import BaseModel
 
 from .interfaces import BaseDevice, device_registry
 
 if TYPE_CHECKING:
     from requests import Session
+
+TModel = TypeVar("TModel", bound=BaseModel)
+
+
+class ModelView(Generic[TModel]):
+    def __init__(self, model: TModel | list[TModel]):
+        self._model = model
+
+    def json(self) -> str:
+        if isinstance(self._model, list):
+            return json.dumps(
+                [item.model_dump(by_alias=True) for item in self._model],
+                ensure_ascii=False,
+            )
+        return self._model.model_dump_json(by_alias=True)
+
+    def __getattr__(self, item):
+        return getattr(self._model, item)
+
+    def __repr__(self) -> str:
+        return repr(self._model)
 
 
 class NodeConfig:
@@ -28,18 +52,20 @@ class NodeConfig:
     def text(self):
         return self._response.text
 
-    @property
     def json(self):
-        return self._parsed_data.json()
+        return self._parsed_data.model_dump_json()
 
     def __str__(self):
         return self.text
 
+    @property
     def vlans(self):
-        return self._parsed_data.vlans
+        return ModelView(self._parsed_data.vlans)
 
+    @property
     def interfaces(self):
-        return self._parsed_data.interfaces
+        return ModelView(self._parsed_data.interfaces)
 
+    @property
     def system(self):
-        return self._parsed_data.system
+        return ModelView(self._parsed_data.system)
