@@ -78,6 +78,11 @@ class BaseDevice(ABC):
         }
 
         if "vlans" in self._declared_sections:
+            if "vlans" not in self.raw:
+                raise ValueError(
+                    f"{self.__class__.__name__}: template '{self.template}' declares optional group "
+                    f"'vlans', but TTP did not return it."
+                )
             vlans_data = self.vlans() or []
             result["vlans"] = [Vlans(**item) for item in vlans_data]
         return result
