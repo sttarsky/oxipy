@@ -1,6 +1,6 @@
 from functools import cached_property
 import json
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Iterator, Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -23,6 +23,21 @@ class ModelView(Generic[TModel]):
                 ensure_ascii=False,
             )
         return self._model.model_dump_json(by_alias=True)
+
+    def __iter__(self) -> Iterator[TModel]:
+        if isinstance(self._model, list):
+            return iter(self._model)
+        raise TypeError("This view wraps a single model, not a list")
+
+    def __len__(self) -> int:
+        if isinstance(self._model, list):
+            return len(self._model)
+        raise TypeError("This view wraps a single model, not a list")
+
+    def __getitem__(self, item):
+        if isinstance(self._model, list):
+            return self._model[item]
+        raise TypeError("This view wraps a single model, not a list")
 
     def __getattr__(self, item):
         return getattr(self._model, item)
