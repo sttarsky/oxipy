@@ -1,0 +1,240 @@
+# oxipy
+
+Python-клиент для работы с Oxi API — системой мониторинга и управления сетевыми устройствами. Предоставляет удобный интерфейс для получения конфигураций узлов, их парсинга и работы с результатами через типизированные Pydantic-модели.
+
+## Содержание
+
+- [Установка](#установка)
+- [Быстрый старт](#быстрый-старт)
+- [API Reference](#api-reference)
+  - [OxiAPI](#oxiapi)
+  - [NodeView](#nodeview)
+  - [NodeConfig](#nodeconfig)
+  - [ModelView](#modelview)
+- [Поддерживаемые устройства](#поддерживаемые-устройства)
+- [Дополнительно](#дополнительно)
+
+---
+
+## Установка
+
+```bash
+pip install oxipy
+```
+
+Или из исходников:
+
+```bash
+git clone https://gitea.imbastark.ru/Netbox/oxipy
+cd oxipy
+pip install -e .
+```
+
+**Требования:** Python 3.13+
+
+---
+
+## Быстрый старт
+
+```python
+from oxi import OxiAPI
+
+api = OxiAPI(url="https://oxi.example.com", verify=False)
+
+node = api.node("Router_HOME")
+
+print(node.ip)          # '192.168.1.1'
+print(node.model)       # 'keenetic'
+print(node.full_name)   # 'Router_HOME'
+
+print(node.config.system.model)
+print(node.config.interfaces.json())
+print(node.config.vlans.json())
+```
+
+---
+
+## API Reference
+
+### OxiAPI
+
+Точка входа в библиотеку. Управляет HTTP-сессией и предоставляет доступ к узлам.
+
+```python
+OxiAPI(
+    url: str,
+    username: str | None = None,
+    password: str | None = None,
+    verify: bool = True,
+)
+```
+
+| Параметр   | Тип    | Описание                                                       |
+|------------|--------|----------------------------------------------------------------|
+| `url`      | `str`  | Базовый URL Oxi API, например `https://oxi.example.com`       |
+| `username` | `str`  | Имя пользователя для базовой аутентификации (опционально)      |
+| `password` | `str`  | Пароль для базовой аутентификации (опционально)                |
+| `verify`   | `bool` | Проверять SSL-сертификат. `False` — отключить проверку         |
+
+**Пример:**
+
+```python
+# Без аутентификации
+api = OxiAPI(url="https://oxi.example.com")
+
+# С базовой аутентификацией
+api = OxiAPI(
+    url="https://oxi.example.com",
+    username="admin",
+    password="secret",
+)
+
+# Использование как контекстного менеджера (автоматически закрывает сессию)
+with OxiAPI(url="https://oxi.example.com") as api:
+    node = api.node("Router_HOME")
+    print(node.ip)
+```
+
+#### `api.node(name)`
+
+Возвращает [`NodeView`](#nodeview) для указанного узла.
+
+```python
+node = api.node("Router_HOME")
+```
+
+---
+
+### NodeView
+
+Представление узла сети. Содержит метаданные и ленивый доступ к конфигурации.
+
+| Свойство    | Тип          | Описание                                      |
+|-------------|--------------|-----------------------------------------------|
+| `ip`        | `str`        | IP-адрес узла                                 |
+| `full_name` | `str`        | Полное имя узла в Oxi                         |
+| `group`     | `str`        | Группа, к которой принадлежит узел            |
+| `model`     | `str`        | Модель устройства (используется для парсинга) |
+| `config`    | `NodeConfig` | Конфигурация узла (загружается при первом обращении) |
+
+**Пример:**
+
+```python
+node = api.node("Router_HOME")
+
+print(node.ip)        # '10.0.0.1'
+print(node.group)     # 'branch-office'
+print(node.model)     # 'keenetic'
+
+# Конфигурация загружается один раз (cached_property)
+cfg = node.config
+```
+
+---
+
+### NodeConfig
+
+Загружает и парсит конфигурацию устройства. Использует TTP-шаблоны, соответствующие модели устройства.
+
+Доступ к секциям конфигурации осуществляется через свойства, возвращающие [`ModelView`](#modelview).
+
+| Свойство     | Возвращает              | Описание                          |
+|--------------|-------------------------|-----------------------------------|
+| `system`     | `ModelView[System]`     | Системная информация об устройстве |
+| `interfaces` | `ModelView[list[Interfaces]]` | Список интерфейсов           |
+| `vlans`      | `ModelView[list[Vlans]]`     | Список VLAN (если есть)      |
+| `text`       | `str`                   | Сырой текст конфигурации          |
+
+**Пример:**
+
+```python
+cfg = node.config
+
+# Системная информация
+print(cfg.system.model)          # 'RB951Ui-2nD'
+print(cfg.system.serial_number)  # 'B88C0B31117B'
+print(cfg.system.version)        # '7.12.1'
+
+# Итерация по интерфейсам
+for iface in cfg.interfaces:
+    print(iface.name, iface.ip_address, iface.mask)
+
+# Индексация
+first_iface = cfg.interfaces[0]
+print(first_iface.name)
+
+# Количество интерфейсов
+print(len(cfg.interfaces))
+
+# JSON-дамп любой секции
+print(cfg.interfaces.json())
+print(cfg.vlans.json())
+print(cfg.system.json())
+
+# Сырая конфигурация текстом
+print(cfg.text)
+```
+
+---
+
+### ModelView
+
+Обёртка над Pydantic-моделью или списком моделей. Обеспечивает сериализацию, итерацию и прозрачный доступ к атрибутам.
+
+| Метод / свойство | Применимо к    | Описание                                                      |
+|------------------|----------------|---------------------------------------------------------------|
+| `.json()`        | оба варианта   | Возвращает JSON-строку (с `by_alias=True`)                    |
+| `.<attr>`        | оба варианта   | Проксирует обращение к атрибутам вложенной модели             |
+| `iter(view)`     | список         | Итерация по элементам списка моделей                          |
+| `len(view)`      | список         | Количество элементов в списке                                 |
+| `view[i]`        | список         | Получение элемента по индексу или срез                        |
+
+> `__iter__`, `__len__` и `__getitem__` доступны только для `interfaces` и `vlans` (они оборачивают список). Вызов этих методов на `system` (одиночная модель) вызовет `TypeError`.
+
+**Примеры:**
+
+```python
+# Одиночная модель — system
+view = node.config.system
+print(view.json())
+# '{"model":"RB951Ui-2nD","serial_number":"B88C0B31117B","version":"7.12.1"}'
+print(view.model)          # 'RB951Ui-2nD'
+print(view.serial_number)  # 'B88C0B31117B'
+
+# Список — interfaces
+interfaces = node.config.interfaces
+
+# Итерация
+for iface in interfaces:
+    print(iface.name, iface.ip_address)
+
+# Длина
+print(len(interfaces))   # 5
+
+# Индексация и срезы
+first = interfaces[0]
+top3 = interfaces[:3]
+
+# JSON всего списка
+print(interfaces.json())
+```
+
+---
+
+## Поддерживаемые устройства
+
+| Устройство  | Ключи реестра                          |
+|-------------|----------------------------------------|
+| Keenetic    | `ndms`, `keenetic`, `keeneticos`       |
+| MikroTik    | `routeros`, `ros`, `mikrotik`          |
+
+Ключи реестра — это значения поля `model`, возвращаемого API для узла. Регистр не учитывается.
+
+Добавить поддержку нового устройства можно самостоятельно — подробнее в разделе [Расширение моделей](docs/extending-models.md).
+
+---
+
+## Дополнительно
+
+- [Написание TTP-шаблонов](docs/templates.md)
+- [Расширение и переопределение моделей устройств](docs/extending-models.md)
