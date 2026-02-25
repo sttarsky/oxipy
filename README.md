@@ -1,6 +1,6 @@
 # oxipy
 
-Python-клиент для работы с Oxi API — системой мониторинга и управления сетевыми устройствами. Предоставляет удобный интерфейс для получения конфигураций узлов, их парсинга и работы с результатами через типизированные Pydantic-модели.
+Python-клиент для работы с Oxidized API — системой управления конфигурацией сетевых устройств. Предоставляет удобный интерфейс для получения конфигураций узлов, их парсинга и работы с результатами.
 
 ## Содержание
 
@@ -18,19 +18,65 @@ Python-клиент для работы с Oxi API — системой мони
 
 ## Установка
 
+> Пакет распространяется через Gitea Package Registry и исходники репозитория.
+> В PyPI пакет не публикуется.
+
+**Требования:** Python 3.13+
+
+### Из Gitea Package Registry
+
+Добавьте registry в конфигурацию pip и установите пакет:
+
+```bash
+pip install oxipy \
+  --index-url https://gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
+```
+
+Или пропишите registry постоянно в `pip.conf` / `pip.ini`, чтобы не указывать `--index-url` каждый раз:
+
+```ini
+# ~/.config/pip/pip.conf  (Linux/macOS)
+# %APPDATA%\pip\pip.ini   (Windows)
+
+[global]
+extra-index-url = https://gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
+```
+
+После этого достаточно:
+
 ```bash
 pip install oxipy
 ```
 
-Или из исходников:
+Если registry требует аутентификации, передайте токен:
+
+```bash
+pip install oxipy \
+  --index-url https://__token__:<your_token>@gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
+```
+
+### Из репозитория Gitea
+
+Установка напрямую через pip без клонирования:
+
+```bash
+pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git
+```
+
+Конкретный тег или ветка:
+
+```bash
+pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git@v0.1.0
+pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git@dev
+```
+
+Для разработки (editable install):
 
 ```bash
 git clone https://gitea.imbastark.ru/Netbox/oxipy
 cd oxipy
 pip install -e .
 ```
-
-**Требования:** Python 3.13+
 
 ---
 
@@ -43,13 +89,30 @@ api = OxiAPI(url="https://oxi.example.com", verify=False)
 
 node = api.node("Router_HOME")
 
-print(node.ip)          # '192.168.1.1'
-print(node.model)       # 'keenetic'
-print(node.full_name)   # 'Router_HOME'
+print(node.ip)          
+print(node.model)       
+print(node.full_name)   
+
+>>> 192.168.1.1
+>>> keenetic
+>>> router/HQ
 
 print(node.config.system.model)
 print(node.config.interfaces.json())
 print(node.config.vlans.json())
+
+>>> Sprinter (KN-3710)
+>>> 
+[
+    {"name":"Bridge1","ip_address":"192.168.1.1","mask":24,"description":"\"Guest network\""},
+    {"name":"Bridge0","ip_address":"172.16.1.1","mask":24,"description":"\"Home network\""}
+]
+>>> 
+[
+    {"vlan_id":1,"name":"Home VLAN"},
+    {"vlan_id":2,"name":"Подключение Ethernet"},
+    {"vlan_id":3,"name":"Home network"}
+]
 ```
 
 ---
