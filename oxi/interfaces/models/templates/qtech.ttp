@@ -3,22 +3,25 @@
 <vars>
 default_system = {
     "model": "",
-    "serial_number": ""
+    "serial_number": "",
+    "version": ""
 }
 </vars>
 
-<group name="system">
-! {{ model }} Series Software, Version {{ bootrom_ver }} Build {{ version }}, {{ ignore }}
-! Serial num:{{ serial_number }}, {{ ignore }}
+<group name="system" default="default_system">
+! {{ model | ORPHRASE }} Series Software, Version {{ ignore }} Build {{ version | strip(",") }}{{ ignore('.*') }}
+! Serial num:{{ serial_number | strip(",") }}{{ ignore('.*') }}
 </group>
 
 <group name="interfaces">
 interface {{ interface }}
-    description {{ description | ORPHRASE }}
-    ip address {{ ip_address }} {{ netmask }}
+ description {{ description | ORPHRASE }}
+ ip address {{ ip_address }} {{ netmask }}
 </group>
 
 <group name="vlans">
-vlan {{ vlan_id }}
-    name {{ name }}
+vlan {{ vlan_ids | contains(",", "-") | unrange("-", ",") | _start_ }}
+,{{ vlan_tail | unrange("-", ",") }}
+vlan {{ vlan_id | _start_ }}
+ name {{ name | ORPHRASE }}
 </group>
