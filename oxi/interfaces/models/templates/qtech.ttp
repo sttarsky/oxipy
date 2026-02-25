@@ -1,0 +1,24 @@
+<doc>
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": ""
+}
+</vars>
+
+<group name="system">
+! {{ model }} Series Software, Version {{ bootrom_ver }} Build {{ version }}, {{ ignore }}
+! Serial num:{{ serial_number }}, {{ ignore }}
+</group>
+
+<group name="interfaces">
+interface {{ interface }}
+    description {{ description | ORPHRASE }}
+    ip address {{ ip_address }} {{ netmask }}
+</group>
+
+<group name="vlans">
+vlan {{ vlan_id }}
+    name {{ name }}
+</group>
