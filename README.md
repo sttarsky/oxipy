@@ -308,6 +308,8 @@ print(interfaces.json())
 | ---------- | -------------------------------- |
 | Keenetic   | `ndms`, `keenetic`, `keeneticos` |
 | MikroTik   | `routeros`, `ros`, `mikrotik`    |
+| Qtech      | `qtech`                          |
+| Huawei     | `huawei`, `vrp`                  |
 
 
 Ключи реестра — это значения поля `model`, возвращаемого API для узла. Регистр не учитывается.
