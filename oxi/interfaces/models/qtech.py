@@ -8,17 +8,6 @@ from oxi.interfaces.base import BaseDevice
 class Qtech(BaseDevice):
     template = "qtech.ttp"
 
-    def interfaces(self) -> list[dict]:
-        interfaces_ttp = self.raw["interfaces"]
-        for item in interfaces_ttp:
-            if item.get("ip_address") and item.get("netmask"):
-                ipaddress = ip_interface(
-                    f"{item.get('ip_address')}/{item.get('netmask')}"
-                )
-                item["mask"] = ipaddress.network.prefixlen
-                item.pop("netmask", "Key not found")
-        return interfaces_ttp
-
     def vlans(self) -> list[dict]:
         vlans_ttp = self.raw["vlans"]
         vlans = []
@@ -46,4 +35,4 @@ if __name__ == "__main__":
         data = file.read()
     qtech = Qtech(data)
     qt = qtech.parse()
-    # print(qt)
+    print(qt)
