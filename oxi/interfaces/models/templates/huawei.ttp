@@ -34,7 +34,6 @@
   {{ field | exclude("pattern") }}    — пропустить строку при совпадении
   {{ ignore }}                        — захватить и выбросить значение
   {{ ignore('.*') }}                  — выбросить всё до конца строки
-
 Подробнее: docs/templates.md
 </doc>
 <vars>
@@ -46,13 +45,14 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
-    ...
+# VRP (R) software, Version {{ version }} ({{ model }} {{ serial_number }})
 </group>
 
 <group name="interfaces">
-    ...
+interface {{ interface }}
+ description {{ description }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
-
 <group name="vlans">
-    ...
+vlan batch {{ vlan_ids | ORPHRASE | unrange(" to ", " ") | split(" ")}}
 </group>
