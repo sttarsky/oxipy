@@ -6,7 +6,7 @@ device_registry = {}
 
 
 def register_parser(
-    name: list[str],
+    name: list[str] | str,
 ) -> Callable[[Type[BaseDevice]], Type[BaseDevice]]:
     def wrapper(cls):
         name_list = []
@@ -23,4 +23,4 @@ def register_parser(
 
 from . import models  # noqa: E402, F401
 
-__all__ = ["register_parser", "device_registry"]
+__all__ = ["register_parser", "device_registry", "BaseDevice"]
