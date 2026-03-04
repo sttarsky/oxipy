@@ -1,14 +1,22 @@
-import os
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 
 
-@register_parser(["QTECH"])
-class Qtech(BaseDevice):
-    template = "qtech.ttp"
+@register_parser("eltex")
+class Eltex(BaseDevice):
+    template = "eltex.ttp"
+
+    def system(self) -> dict:
+        system = self.raw["system"]
+        serial_num = self.raw["serial"]
+        if serial_num:
+            if len(serial_num) > 1:
+                serial_num = serial_num[0]
+            system["serial_number"] = serial_num.get("serial_number")
+        return system
 
     def vlans(self) -> list[dict]:
-        vlans_ttp = self.raw["vlans"]
+        vlans_ttp = self.raw.get("vlans", [])
         vlans = []
         named_vlan = set()
         for item in vlans_ttp:
@@ -20,7 +28,7 @@ class Qtech(BaseDevice):
                 tail = item.get("vlan_tail")
                 if tail:
                     ids = f"{ids},{tail}"
-                for vid in ids.split(","):
+                for vid in ids:
                     vid = vid.strip()
                     if vid in named_vlan:
                         continue
@@ -29,9 +37,7 @@ class Qtech(BaseDevice):
 
 
 if __name__ == "__main__":
-    print(os.path.abspath(os.curdir))
-    with open("./test3.txt") as file:
+    with open("./test6.txt") as file:
         data = file.read()
-    qtech = Qtech(data)
-    qt = qtech.parse()
-    print(qt)
+    eltex = Eltex(data)
+    print(eltex.parse())
