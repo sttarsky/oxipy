@@ -1,0 +1,68 @@
+<doc>
+Базовый шаблон для нового устройства. Скопируйте этот файл, переименуйте
+в &lt;vendor&gt;.ttp и заполните группы под формат конфигурации вашего устройства.
+
+Обязательные группы: system, interfaces.
+Опциональная группа: vlans — добавляйте только если устройство поддерживает VLAN.
+
+--- Группа system ---
+Должна возвращать одиночный словарь с полями:
+  model         (str)  — модель устройства
+  serial_number (str)  — серийный номер
+  version       (str)  — версия прошивки
+
+--- Группа interfaces ---
+Должна возвращать список словарей. Каждый элемент:
+  interface     (str)           — имя интерфейса (alias поля name)
+  ip_address    (str|None)      — IPv4-адрес
+  mask          (int|None)      — длина префикса (напр. 24)
+  description   (str|None)      — описание интерфейса
+
+  Если устройство возвращает маску в виде 255.255.255.0, конвертируйте
+  её в prefix length в методе interfaces() класса устройства.
+
+--- Группа vlans ---
+Должна возвращать список словарей. Каждый элемент:
+  id            (int)      — номер VLAN (alias поля vlan_id)
+  description   (str|None) — название VLAN (alias поля name)
+
+--- Полезные модификаторы TTP ---
+  {{ field | ORPHRASE }}              — одно слово или фраза до конца строки
+  {{ field | _start_ }}               — начало новой записи группы
+  {{ field | strip('"') }}            — убрать кавычки
+  {{ field | replace("yes","True") }} — замена подстроки
+  {{ field | exclude("pattern") }}    — пропустить строку при совпадении
+  {{ ignore }}                        — захватить и выбросить значение
+  {{ ignore('.*') }}                  — выбросить всё до конца строки
+
+Подробнее: docs/templates.md
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+Active-image: {{ ignore }} {{ _start_ }}
+! Version: {{ version }}
+</group>
+<group name="serial" method="table">
+! Unit MAC address Hardware version Serial number
+!  {{ unit | exclude("-") }} {{ mac_address }} {{ hardware_version }} {{ serial_number }}
+</group>
+
+<group name="interfaces">
+interface {{ interface | ORPHRASE }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
+</group>
+
+<group name="vlans">
+interface vlan {{ vlan_id | _start_ }}
+ name {{ name  }}
+
+vlan {{ _db_ | _start_ }}
+ vlan {{ vlan_ids | joinmatches(',') | unrange("-", ",") | split(",")}}
+</group>
