@@ -14,7 +14,7 @@ default_system = {
 </group>
 
 <group name="interfaces">
-interface {{ interface }}
+interface {{ interface | ORPHRASE }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
