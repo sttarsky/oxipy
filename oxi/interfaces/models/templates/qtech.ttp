@@ -9,8 +9,13 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
-! {{ model | ORPHRASE }} Series Software, Version {{ ignore }} Build {{ version | strip(",") }}{{ ignore('.*') }}
+! {{ model | ORPHRASE | _start_ }} Series Software, Version {{ ignore }} Build {{ version | strip(",") }}{{ ignore('.*') }}
 ! Serial num:{{ serial_number | strip(",") }}{{ ignore('.*') }}
+
+! System description : {{ description | PHRASE | _start_ }}({{ model }}) By {{ vendor }}
+! System description : {{ description | PHRASE | _start_ }}({{ model }})
+! System software version : {{ description | PHRASE }}, Release({{ version }})
+! System serial number : {{ serial_number }}
 </group>
 
 <group name="interfaces">

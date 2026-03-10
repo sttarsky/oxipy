@@ -7,6 +7,10 @@ from oxi.interfaces.base import BaseDevice
 class Qtech(BaseDevice):
     template = "qtech.ttp"
 
+    def system(self) -> dict:
+        system = self.raw["system"]
+        return system
+
     def vlans(self) -> list[dict]:
         vlans_ttp = self.raw["vlans"]
         vlans = []
