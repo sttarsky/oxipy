@@ -22,6 +22,6 @@ interface {{ interface | ORPHRASE }}
 <group name="vlans">
 vlan {{ vlan_ids | contains(",", "-") | unrange("-", ",") }}
 ,{{ vlan_tail | unrange("-", ",") }}
-vlan {{ vlan_id  }}
+vlan {{ vlan_id | _start_ }}
  name {{ name | ORPHRASE }}
 </group>

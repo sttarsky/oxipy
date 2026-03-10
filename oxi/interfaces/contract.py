@@ -32,7 +32,7 @@ class Vlans(Base):
     Optional
     """
 
-    vlan_id: int = Field(alias="id")
+    vlan_id: int
     name: str | None = Field(default=None, alias="description")
 
 

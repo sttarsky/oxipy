@@ -73,10 +73,11 @@ class NodeConfig:
         return self._response.text
 
     def dump_json(self):
-        return self._parsed_data.model_dump_json()
+        return self._parsed_data.model_dump_json(by_alias=True)
 
     def dump(self):
-        return self._parsed_data.model_dump()
+        return self._parsed_data.model_dump(by_alias=True)
+
     def __str__(self):
         return self.text
 
