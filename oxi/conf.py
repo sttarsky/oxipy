@@ -16,13 +16,18 @@ class ModelView(Generic[TModel]):
     def __init__(self, model: TModel | list[TModel]):
         self._model = model
 
-    def json(self) -> str:
+    def dump_json(self) -> str:
         if isinstance(self._model, list):
             return json.dumps(
                 [item.model_dump(by_alias=True) for item in self._model],
                 ensure_ascii=False,
             )
         return self._model.model_dump_json(by_alias=True)
+
+    def dump(self) -> dict | list:
+        if isinstance(self._model, list):
+            return [item.model_dump(by_alias=True) for item in self._model]
+        return self._model.model_dump(by_alias=True)
 
     def __iter__(self) -> Iterator[TModel]:
         if isinstance(self._model, list):
@@ -67,9 +72,11 @@ class NodeConfig:
     def text(self):
         return self._response.text
 
-    def json(self):
+    def dump_json(self):
         return self._parsed_data.model_dump_json()
 
+    def dump(self):
+        return self._parsed_data.model_dump()
     def __str__(self):
         return self.text
 
