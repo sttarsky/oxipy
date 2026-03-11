@@ -5,9 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "oxipy"
 version = "0.1.0"
-description = "Oxi API client"
+description = "Oxidized API client"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "pydantic>=2.12.5",
     "requests>=2.32.5",
