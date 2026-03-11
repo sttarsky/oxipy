@@ -310,6 +310,9 @@ print(interfaces.json())
 | MikroTik   | `routeros`, `ros`, `mikrotik`    |
 | Qtech      | `qtech`                          |
 | Huawei     | `huawei`, `vrp`                  |
+| Eltex      | `eltex`                          |
+| H3C        | `h3c`                            |
+| Quasar     | `qos`, `quasar`                  |
 
 
 Ключи реестра — это значения поля `model`, возвращаемого API для узла. Регистр не учитывается.
