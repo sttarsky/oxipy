@@ -14,7 +14,7 @@ class NodeView:
         self._base_url = base_url
         self._data = data
 
-    def _updater(self) -> None:
+    def _updater(self) -> int:
         response = self._session.get(f"{self._base_url}/node/next/{self.full_name}")
         response.raise_for_status()
         return response.status_code

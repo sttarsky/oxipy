@@ -26,3 +26,8 @@ class OxiAPI:
 
     def close(self):
         return self._session.close()
+
+    def reload(self):
+        reload_response = self._session.get(f"{self.base_url}/reload")
+        reload_response.raise_for_status()
+        return reload_response.status_code
