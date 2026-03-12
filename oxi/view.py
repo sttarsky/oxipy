@@ -14,6 +14,11 @@ class NodeView:
         self._base_url = base_url
         self._data = data
 
+    def _updater(self) -> None:
+        response = self._session.get(f"{self._base_url}/node/next/{self.full_name}")
+        response.raise_for_status()
+        return response.status_code
+
     @property
     def ip(self):
         return self._data.get("ip")
@@ -29,6 +34,21 @@ class NodeView:
     @property
     def model(self):
         return self._data.get("model")
+
+    @property
+    def last_status(self):
+        return self._data.get("last").get("status")
+
+    @property
+    def last_check(self):
+        return self._data.get("last").get("start")
+
+    @property
+    def refresh(self):
+        result = self._updater()
+        if result != 200:
+            raise ValueError(f"Failed to refresh node {self.full_name}")
+        return "OK"
 
     @cached_property
     def config(self):
