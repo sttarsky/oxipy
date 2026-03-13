@@ -52,10 +52,10 @@ default_system = {
 
 </group>
 <group name="interfaces">
-{{ ignore("\s*") }}config {{ interface }} ipv4 address {{ ip_address }}/{{ mask }} gateway {{ gateway }} {{ ignore }}
+{{ ignore("\\s*") }}config {{ interface }} ipv4 address {{ ip_address }}/{{ mask }} gateway {{ gateway }} {{ ignore }}
 </group>
 
 <group name="bulkinterfaces.{{ interface }}">
-{{ ignore("\s*") }}config interface {{ interface | _start_ }} fec none mode force-up enable
-{{ ignore("\s*") }}config interface {{ interface | _start_ }} description {{ description | ORPHRASE | strip('"')}}
+{{ ignore("\\s*") }}config interface {{ interface | _start_ }} fec none mode force-up enable
+{{ ignore("\\s*") }}config interface {{ interface | _start_ }} description {{ description | ORPHRASE | strip('"')}}
 </group>
