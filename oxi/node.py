@@ -18,8 +18,7 @@ class Node:
         if not url.endswith(".json"):
             url += ".json"
         response = self._session.get(url)
-        if response.status_code == 500:
-            raise ValueError(f"page {url} not found")
+        response.raise_for_status()
         return NodeView(
             session=self._session, base_url=self._base_url, data=response.json()
         )
