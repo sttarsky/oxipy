@@ -5,23 +5,6 @@ from oxi.interfaces import BaseDevice, register_parser
 class Quasar(BaseDevice):
     template = "quasar.ttp"
 
-    def system(self) -> dict:
-        raw = self.raw.get("system", {})
-        items = raw if isinstance(raw, list) else [raw]
-        selected = next(
-            (item for item in items if item.get("assembly_version")),
-            items[0] if items else {},
-        )
-        result = dict(selected)
-        result["version"] = (
-            result.pop("assembly_version", None)
-            or result.pop("engine_version", None)
-            or ""
-        )
-        result.pop("assembly_version", None)
-        result.pop("engine_version", None)
-        return result
-
     def interfaces(self) -> list[dict]:
         ether_interfaces: dict = self.raw["interfaces"]
         interfaces: list[dict] = []

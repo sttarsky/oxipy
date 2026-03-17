@@ -46,16 +46,17 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
-#{{ ignore("\s+Assembly\s+") }}{{ assembly_version }}
-#{{ ignore("\s+Product Name\s+") }}{{ model | ORPHRASE }}
-#{{ ignore("\s+Product Serial Number\s+") }}{{ serial_number }}
+# Component Version {{ _start_ }}
+# Assembly {{ version }}
+# Product Name {{ model | ORPHRASE }}
+# Product Serial Number {{ serial_number }}
+
+# Subsystem Version {{ _start_ }}
+# Engine {{ version }}
+# Product Name {{ model | ORPHRASE }}
+# Product Serial Number {{ serial_number }}
 </group>
 
-<group name="system" default="default_system">
-#{{ ignore("\s+Engine\s+") }}{{ engine_version }}
-#{{ ignore("\s+Product Name\s+") }}{{ model | ORPHRASE }}
-#{{ ignore("\s+Product Serial Number\s+") }}{{ serial_number }}
-</group>
 <group name="interfaces">
 {{ ignore("\\s*") }}config {{ interface }} ipv4 address {{ ip_address }}/{{ mask }} gateway {{ gateway }} {{ ignore }}
 </group>
