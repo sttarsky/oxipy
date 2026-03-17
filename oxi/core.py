@@ -3,6 +3,7 @@ from requests import Session
 from .node import Node
 
 
+# TODO: Add custom adapter for Oxi
 class OxiAPI:
     def __init__(
         self,
@@ -14,7 +15,7 @@ class OxiAPI:
         self.base_url = url.rstrip("/")
         self._session = Session()
         self._session.verify = verify
-        if username and password:
+        if username is not None and password is not None:
             self._session.auth = (username, password)
         self.node = Node(self._session, self.base_url)
 

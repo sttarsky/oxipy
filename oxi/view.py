@@ -20,36 +20,41 @@ class NodeView:
         return response.status_code
 
     @property
-    def ip(self):
+    def name(self) -> str:
+        return self._data.get("name")
+
+    @property
+    def ip(self) -> str:
         return self._data.get("ip")
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return self._data.get("full_name")
 
     @property
-    def group(self):
+    def group(self) -> str:
         return self._data.get("group")
 
     @property
-    def model(self):
+    def model(self) -> str:
         return self._data.get("model")
 
     @property
-    def last_status(self):
-        return self._data.get("last").get("status")
+    def last_status(self) -> str:
+        last = self._data.get("last") or {}
+        return last.get("status")
 
     @property
-    def last_check(self):
-        return self._data.get("last").get("start")
+    def last_check(self) -> str:
+        last = self._data.get("last") or {}
+        return last.get("start")
 
-    @property
-    def refresh(self):
+    def refresh(self) -> str:
         result = self._updater()
         if result != 200:
             raise ValueError(f"Failed to refresh node {self.full_name}")
         return "OK"
 
     @cached_property
-    def config(self):
+    def config(self) -> NodeConfig:
         return NodeConfig(self._session, self.full_name, self.model, self._base_url)

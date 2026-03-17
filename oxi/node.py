@@ -7,11 +7,11 @@ if TYPE_CHECKING:
     from requests import Session
 
 
+# TODO: Add type hints
 class Node:
     def __init__(self, session: "Session", base_url: str):
         self._session = session
         self._base_url = base_url
-        self._data = None
 
     def __call__(self, name: str) -> NodeView:
         url = f"{self._base_url}/node/show/{name}"

@@ -8,7 +8,7 @@ class Base(BaseModel):
 
 class System(BaseModel):
     """
-    Requred
+    Required
     """
 
     model: str
@@ -18,7 +18,7 @@ class System(BaseModel):
 
 class Interfaces(Base):
     """
-    Requred
+    Required
     """
 
     name: str = Field(alias="interface")
