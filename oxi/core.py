@@ -1,9 +1,10 @@
 from typing import Optional
 from requests import Session
+
+from oxi.adapter import OxiAdapter
 from .node import Node
 
 
-# TODO: Add custom adapter for Oxi
 class OxiAPI:
     def __init__(
         self,
@@ -14,8 +15,11 @@ class OxiAPI:
     ):
         self.base_url = url.rstrip("/")
         self._session = Session()
+        self._adapter = OxiAdapter(timeout=10, max_retries=3)
+        self._session.mount("https://", self._adapter)
+        self._session.mount("http://", self._adapter)
         self._session.verify = verify
-        if username is not None and password is not None:
+        if username and password:
             self._session.auth = (username, password)
         self.node = Node(self._session, self.base_url)
 
