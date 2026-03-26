@@ -14,14 +14,23 @@ class OxiAPI:
         verify: bool = True,
     ):
         self.base_url = url.rstrip("/")
-        self._session = Session()
-        self._adapter = OxiAdapter(timeout=10, max_retries=3)
-        self._session.mount("https://", self._adapter)
-        self._session.mount("http://", self._adapter)
-        self._session.verify = verify
-        if username and password:
-            self._session.auth = (username, password)
+        self._session = self.__create_session(username, password, verify)
         self.node = Node(self._session, self.base_url)
+
+    def __create_session(
+        self,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        verify: bool = True,
+    ) -> Session:
+        session = Session()
+        adapter = OxiAdapter(timeout=10, max_retries=3)
+        session.mount("https://", adapter)
+        session.mount("http://", adapter)
+        session.verify = verify
+        if username and password:
+            session.auth = (username, password)
+        return session
 
     def __enter__(self):
         return self
