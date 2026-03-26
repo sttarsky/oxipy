@@ -1,7 +1,8 @@
 from typing import Optional
-from requests import Session
+from requests import HTTPError, Session
 
 from oxi.adapter import OxiAdapter
+from oxi.exception import OxiAPIError
 from .node import Node
 
 
@@ -42,6 +43,9 @@ class OxiAPI:
         return self._session.close()
 
     def reload(self):
-        reload_response = self._session.get(f"{self.base_url}/reload")
-        reload_response.raise_for_status()
+        try:
+            reload_response = self._session.get(f"{self.base_url}/reload")
+            reload_response.raise_for_status()
+        except HTTPError as e:
+            raise OxiAPIError.from_http_error(e, context="Reload Oxidized") from e
         return reload_response.status_code
