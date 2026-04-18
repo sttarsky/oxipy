@@ -37,7 +37,7 @@ class Eltex(BaseDevice):
 
 
 if __name__ == "__main__":
-    with open("./test6.txt") as file:
+    with open("./test_not_found.txt") as file:
         data = file.read()
     eltex = Eltex(data)
     print(eltex.parse())

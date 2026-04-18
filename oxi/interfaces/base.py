@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 from ttp import ttp
+from oxi.exception import OxiAPIError
 from oxi.interfaces.contract import Device
 import xml.etree.ElementTree as ET
 from oxi.interfaces.contract import Interfaces, System, Vlans
@@ -10,8 +11,9 @@ class BaseDevice(ABC):
     _REQUIRED_SECTIONS: frozenset[str] = frozenset({"system", "interfaces"})
     _OPTIONAL_SECTIONS: frozenset[str] = frozenset({"vlans"})
 
-    def __init__(self, config: str):
+    def __init__(self, config: str, name: str | None = None):
         self.config: str = config
+        self.name = name
 
         self._loaded_template = self._load_template()
         self._declared_sections = None
@@ -69,6 +71,13 @@ class BaseDevice(ABC):
         return self.raw.get("system", None)
 
     def _validate_contract(self) -> dict:
+        if self.raw is None:
+            msg = (
+                f"Node {self.name} not found"
+                if self.name
+                else "Node not found"
+            )
+            raise OxiAPIError(msg, status_code=404)
         system_data = self.system()
         interfaces_data = self.interfaces() or []
         result = {
@@ -114,6 +123,13 @@ class BaseDevice(ABC):
 
     def _run_ttp(self) -> dict:
         """Основной парсер"""
+        pattern = """node not {{found}}"""
+        parser = ttp(data=self.config, template=pattern)
+        parser.parse()
+        res = parser.result()
+        if res[0][0]:
+            # raise OxiAPIError(f"Node {self.name} not found", status_code=404)
+            return None
         p = ttp(data=self.config, template=self._loaded_template)
         p.parse()
         raw: dict = p.result()[0][0]
