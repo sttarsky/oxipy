@@ -1,6 +1,6 @@
 from functools import cached_property
 import json
-from typing import TYPE_CHECKING, Generic, Iterator, Type, TypeVar
+from typing import TYPE_CHECKING, Generic, Iterator, TypeVar
 
 from pydantic import BaseModel
 
