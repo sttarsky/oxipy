@@ -1,10 +1,12 @@
-import os
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 
 
-def _expand_vlan_range(value: str) -> list[str]:
-    """Разворачивает строку вида '1,7,14-15,200-205' в список ['1','7','14','15',...]."""
+def _expand_vlan_range(value: str | list[str]) -> list[str]:
+    """Expand values like '1,7,14-15' into individual VLAN IDs."""
+    if isinstance(value, list):
+        value = ",".join(str(item) for item in value)
+
     result: list[str] = []
     if not value:
         return result
@@ -31,12 +33,8 @@ def _expand_vlan_range(value: str) -> list[str]:
 class Qtech(BaseDevice):
     template = "qtech.ttp"
 
-    def system(self) -> dict:
-        system = self.raw["system"]
-        return system
-
     def vlans(self) -> list[dict]:
-        vlans_ttp = self.raw["vlans"]
+        vlans_ttp = self.raw.get("vlans", [])
         vlans: list[dict] = []
         named_vlan: set[str] = set()
         for item in vlans_ttp:
@@ -49,7 +47,7 @@ class Qtech(BaseDevice):
             ids = item.get("vlan_ids") or vlan_id or ""
             tail = item.get("vlan_tail")
             if tail:
-                ids = f"{ids},{tail}"
+                ids = [*ids, tail] if isinstance(ids, list) else f"{ids},{tail}"
             for vid in _expand_vlan_range(ids):
                 if vid in named_vlan:
                     continue
@@ -58,7 +56,6 @@ class Qtech(BaseDevice):
 
 
 if __name__ == "__main__":
-    print(os.path.abspath(os.curdir))
     with open("./test3.txt") as file:
         data = file.read()
     qtech = Qtech(data)

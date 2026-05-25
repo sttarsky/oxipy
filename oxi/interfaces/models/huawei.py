@@ -6,8 +6,8 @@ from oxi.interfaces.base import BaseDevice
 class Huawei(BaseDevice):
     template = "huawei.ttp"
 
-    def vlans(self):
-        vlan_ids = self.raw["vlans"].get("vlan_ids")
+    def vlans(self) -> list[dict]:
+        vlan_ids = self.raw.get("vlans", {}).get("vlan_ids", [])
         return [{"vlan_id": vlan} for vlan in vlan_ids]
 
 

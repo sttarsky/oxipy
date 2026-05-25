@@ -24,10 +24,7 @@ class BaseDevice(ABC):
     @abstractmethod
     def template(self) -> str:
         """
-        Expected structure:
-            Название файла с парсером ttp
-        Returns:
-            None
+        Name of the TTP template file used by this device parser.
         """
 
     def vlans(self) -> list[dict]:
@@ -35,14 +32,14 @@ class BaseDevice(ABC):
         Parse VLAN configuration from self.raw['vlans'].
 
         Expected structure:
-            [{"id": 10, "description": "MGMT"}, {"id": 15, "name": "SSH"}, ...]
+            [{"vlan_id": 10, "description": "MGMT"}, {"vlan_id": 15, "name": "SSH"}, ...]
 
         Returns:
-            list[Vlans]: список VLAN из секции vlans,
-                пустой список если секция отсутствует.
+            list[Vlans]: VLANs from the vlans section, or an empty list
+                when the section is absent.
 
         Raises:
-            ValueError: если raw содержит некорректные данные.
+            ValueError: if raw data cannot be validated by the contract.
         """
         return self.raw.get("vlans", [])
 
@@ -51,10 +48,10 @@ class BaseDevice(ABC):
         Parse Interface configuration from self.raw['interfaces'].
 
         Expected raw structure:
-            [{"name": "GEthernet1/0/1", "ip_address": "192.168.1.1", "mask": "24", "description": "IPBB interface"}]
+            [{"interface": "GEthernet1/0/1", "ip_address": "192.168.1.1", "mask": "24", "description": "IPBB interface"}]
 
         Raises:
-            ValueError: если raw содержит некорректные данные.
+            ValueError: if raw data cannot be validated by the contract.
         """
         return self.raw.get("interfaces", [])
 
@@ -66,7 +63,7 @@ class BaseDevice(ABC):
             {"model":"RB951Ui-2nD", serial_number: "B88C0B31117B", "version": "7.12.1"}
 
         Raises:
-            ValueError: если raw содержит некорректные данные.
+            ValueError: if raw data cannot be validated by the contract.
         """
         return self.raw.get("system", None)
 
@@ -97,14 +94,14 @@ class BaseDevice(ABC):
         return result
 
     def _load_template(self):
-        """Подгрузка темплейтов из папки models/templates"""
+        """Load the device TTP template from models/templates."""
         path = Path(__file__).parent / "models" / "templates" / self.template
         if not path.exists():
             raise FileNotFoundError(f"Template {self.template} not found")
         return path.read_text(encoding="utf-8")
 
     def _validate_template_groups(self) -> None:
-        """Проверяем только обязательные группы в template."""
+        """Validate that the template declares all required groups."""
         try:
             root = ET.fromstring(self._loaded_template)
         except ET.ParseError:
@@ -122,7 +119,7 @@ class BaseDevice(ABC):
             )
 
     def _run_ttp(self) -> dict:
-        """Основной парсер"""
+        """Run the node-not-found check and then parse the config with TTP."""
         pattern = """node not {{found}}"""
         parser = ttp(data=self.config, template=pattern)
         parser.parse()

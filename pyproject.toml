@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "oxipy"
 version = "0.1.0"
-description = "Oxidized API client"
+description = "Python client for Oxidized API with TTP-based config parsing"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
