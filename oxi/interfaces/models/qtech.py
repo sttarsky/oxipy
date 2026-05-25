@@ -3,6 +3,30 @@ from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 
 
+def _expand_vlan_range(value: str) -> list[str]:
+    """Разворачивает строку вида '1,7,14-15,200-205' в список ['1','7','14','15',...]."""
+    result: list[str] = []
+    if not value:
+        return result
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            start_s, end_s = part.split("-", 1)
+            try:
+                start, end = int(start_s), int(end_s)
+            except ValueError:
+                result.append(part)
+                continue
+            if start > end:
+                start, end = end, start
+            result.extend(str(i) for i in range(start, end + 1))
+        else:
+            result.append(part)
+    return result
+
+
 @register_parser(["QTECH"])
 class Qtech(BaseDevice):
     template = "qtech.ttp"
@@ -13,28 +37,34 @@ class Qtech(BaseDevice):
 
     def vlans(self) -> list[dict]:
         vlans_ttp = self.raw["vlans"]
-        vlans = []
-        named_vlan = set()
+        vlans: list[dict] = []
+        named_vlan: set[str] = set()
         for item in vlans_ttp:
-            if item.get("vlan_id"):
-                named_vlan.add(item.get("vlan_id"))
+            vlan_id = item.get("vlan_id")
+            if vlan_id and "," not in vlan_id and "-" not in vlan_id:
+                named_vlan.add(vlan_id)
                 vlans.append(item)
-            else:
-                ids = item.get("vlan_ids", "")
-                tail = item.get("vlan_tail")
-                if tail:
-                    ids = f"{ids},{tail}"
-                for vid in ids.split(","):
-                    vid = vid.strip()
-                    if vid in named_vlan:
-                        continue
-                    vlans.append({"vlan_id": vid})
+                continue
+
+            ids = item.get("vlan_ids") or vlan_id or ""
+            tail = item.get("vlan_tail")
+            if tail:
+                ids = f"{ids},{tail}"
+            for vid in _expand_vlan_range(ids):
+                if vid in named_vlan:
+                    continue
+                vlans.append({"vlan_id": vid})
         return vlans
 
 
 if __name__ == "__main__":
     print(os.path.abspath(os.curdir))
     with open("./test3.txt") as file:
+        data = file.read()
+    qtech = Qtech(data)
+    qt = qtech.parse()
+    print(qt)
+    with open("./test3-1.txt") as file:
         data = file.read()
     qtech = Qtech(data)
     qt = qtech.parse()
