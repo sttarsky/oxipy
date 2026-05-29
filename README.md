@@ -22,62 +22,30 @@ configuration sections such as system data, interfaces, and VLANs.
 
 ## Installation
 
-The package is distributed through a private Gitea Package Registry and from the
-source repository. It is not published to PyPI.
+The package is distributed from the source repository. It is not published to
+PyPI yet.
 
 **Requirements:** Python 3.10+
 
-### From Gitea Package Registry
-
-Install the package by pointing `pip` to the private registry:
-
-```bash
-pip install oxipy \
-  --index-url https://gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
-```
-
-You can also configure the registry permanently in `pip.conf` or `pip.ini`:
-
-```ini
-# ~/.config/pip/pip.conf  (Linux/macOS)
-# %APPDATA%\pip\pip.ini   (Windows)
-
-[global]
-extra-index-url = https://gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
-```
-
-After that, install normally:
-
-```bash
-pip install oxipy
-```
-
-If the registry requires authentication, pass a token in the index URL:
-
-```bash
-pip install oxipy \
-  --index-url https://__token__:<your_token>@gitea.imbastark.ru/api/packages/Netbox/pypi/simple/
-```
-
-### From Gitea Source
+### From GitHub Source
 
 Install directly from the repository:
 
 ```bash
-pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git
+pip install git+https://github.com/sttarsky/oxipy.git
 ```
 
 Install a specific tag or branch:
 
 ```bash
-pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git@v0.1.0
-pip install git+https://gitea.imbastark.ru/Netbox/oxipy.git@dev
+pip install git+https://github.com/sttarsky/oxipy.git@v0.1.0
+pip install git+https://github.com/sttarsky/oxipy.git@dev
 ```
 
 For local development:
 
 ```bash
-git clone https://gitea.imbastark.ru/Netbox/oxipy
+git clone https://github.com/sttarsky/oxipy
 cd oxipy
 pip install -e .
 ```
