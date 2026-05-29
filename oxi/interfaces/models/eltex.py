@@ -2,6 +2,30 @@ from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 
 
+def _expand_vlan_range(value: str | list[str]) -> list[str]:
+    if isinstance(value, list):
+        value = ",".join(str(item) for item in value)
+
+    result: list[str] = []
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" not in part:
+            result.append(part)
+            continue
+        start_s, end_s = part.split("-", 1)
+        try:
+            start, end = int(start_s), int(end_s)
+        except ValueError:
+            result.append(part)
+            continue
+        if start > end:
+            start, end = end, start
+        result.extend(str(vlan_id) for vlan_id in range(start, end + 1))
+    return result
+
+
 @register_parser("eltex")
 class Eltex(BaseDevice):
     template = "eltex.ttp"
@@ -17,22 +41,23 @@ class Eltex(BaseDevice):
 
     def vlans(self) -> list[dict]:
         vlans_ttp = self.raw.get("vlans", [])
-        vlans = []
-        named_vlan = set()
+        vlans: list[dict] = []
+        named_vlan: set[str] = set()
         for item in vlans_ttp:
-            if item.get("vlan_id"):
-                named_vlan.add(item.get("vlan_id"))
+            vlan_id = item.get("vlan_id")
+            if vlan_id:
+                named_vlan.add(str(vlan_id))
                 vlans.append(item)
-            else:
-                ids = item.get("vlan_ids", "")
-                tail = item.get("vlan_tail")
-                if tail:
-                    ids = f"{ids},{tail}"
-                for vid in ids:
-                    vid = vid.strip()
-                    if vid in named_vlan:
-                        continue
-                    vlans.append({"vlan_id": vid})
+                continue
+
+            ids = item.get("vlan_ids", "")
+            tail = item.get("vlan_tail")
+            if tail:
+                ids = [*ids, tail] if isinstance(ids, list) else f"{ids},{tail}"
+            for vid in _expand_vlan_range(ids):
+                if vid in named_vlan:
+                    continue
+                vlans.append({"vlan_id": vid})
         return vlans
 
 

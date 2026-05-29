@@ -1,4 +1,13 @@
 <doc>
+Qtech switch configuration parser.
+
+The system group reads the model, serial number, and build number. For Qtech,
+system.version intentionally stores the build number from lines like
+`Version 2.2.0C Build 96279`.
+
+The interfaces group parses CLI interface blocks and converts dotted decimal
+masks to prefix lengths. The vlans group supports named VLANs, comma-separated
+VLAN lists, ranges, and continuation lines.
 </doc>
 <vars>
 default_system = {

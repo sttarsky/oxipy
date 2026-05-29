@@ -1,46 +1,49 @@
-# Расширение и переопределение моделей устройств
+# Extending Device Models
 
-oxipy предоставляет гибкий механизм расширения через наследование от `BaseDevice`. После того как TTP-шаблон разобрал конфигурацию в сырой словарь `self.raw`, данные проходят через три метода экземпляра — `system()`, `interfaces()`, `vlans()` — перед тем как попасть в контракт. Переопределяя эти методы, можно трансформировать, фильтровать и обогащать данные без изменения шаблона или контракта.
+`oxipy` parses an Oxidized configuration in two stages. A TTP template first
+extracts raw dictionaries from the text, then a device model normalizes those
+dictionaries before Pydantic validates them against the public contract.
 
-## Содержание
+Device models extend `BaseDevice`. Override `system()`, `interfaces()`, or
+`vlans()` when the raw TTP result needs vendor-specific cleanup.
 
-- [Архитектура: путь данных](#архитектура-путь-данных)
-- [Регистрация нового устройства](#регистрация-нового-устройства)
-- [Переопределение методов (monkey patching)](#переопределение-методов-monkey-patching)
+## Contents
+
+- [Data Flow](#data-flow)
+- [Registering a Device](#registering-a-device)
+- [Method Overrides](#method-overrides)
   - [interfaces()](#interfaces)
   - [vlans()](#vlans)
   - [system()](#system)
-- [Полный пример: новое устройство](#полный-пример-новое-устройство)
-- [Контракт: ожидаемые структуры](#контракт-ожидаемые-структуры)
+- [Complete Example](#complete-example)
+- [Expected Contract](#expected-contract)
 
----
+## Data Flow
 
-## Архитектура: путь данных
-
-```
-текст конфигурации
-        │
-        ▼
-   TTP-шаблон (.ttp)
-        │  парсит в сырой словарь
-        ▼
+```text
+configuration text
+        |
+        v
+   TTP template (.ttp)
+        |
+        v
    self.raw: dict
-        │
-        ├──► system()     → dict
-        ├──► interfaces() → list[dict]
-        └──► vlans()      → list[dict]
-                │
-                ▼
-        _validate_contract()
-                │  создаёт Pydantic-модели
-                ▼
-           Device(system, interfaces, vlans)
+        |
+        +--> system()     -> dict
+        +--> interfaces() -> list[dict]
+        +--> vlans()      -> list[dict]
+        |
+        v
+   Pydantic validation
+        |
+        v
+   Device(system, interfaces, vlans)
 ```
 
-Методы `system()`, `interfaces()`, `vlans()` — это точки расширения. Базовая реализация просто возвращает данные из `self.raw`:
+The extension methods are intentionally small. The base implementation returns
+data directly from `self.raw`:
 
 ```python
-# BaseDevice (упрощённо)
 def interfaces(self) -> list[dict]:
     return self.raw.get("interfaces", [])
 
@@ -51,18 +54,16 @@ def system(self) -> dict:
     return self.raw.get("system", None)
 ```
 
----
+## Registering a Device
 
-## Регистрация нового устройства
+To add support for a new vendor:
 
-Чтобы добавить поддержку нового вендора:
-
-1. Создайте файл в `oxi/interfaces/models/`, например `cisco.py`.
-2. Создайте шаблон `oxi/interfaces/models/templates/cisco.ttp`.
-3. Унаследуйте класс от `BaseDevice` и зарегистрируйте его декоратором `@register_parser`.
+1. Create a Python file in `oxi/interfaces/models/`, for example `cisco.py`.
+2. Create a template in `oxi/interfaces/models/templates/`, for example
+   `cisco.ttp`.
+3. Subclass `BaseDevice` and register it with `@register_parser`.
 
 ```python
-# oxi/interfaces/models/cisco.py
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 
@@ -72,26 +73,26 @@ class CiscoIOS(BaseDevice):
     template = "cisco.ttp"
 ```
 
-Декоратор `@register_parser` принимает список строк — это ключи, по которым устройство ищется в реестре. Поле `model` от API сравнивается с этими ключами без учёта регистра.
+`@register_parser` accepts a string or a list of strings. These values are the
+registry keys used to match the Oxidized node `model` field. Matching is
+case-insensitive.
 
-После добавления файла он автоматически импортируется через `pkgutil` при старте приложения — явно импортировать не нужно.
+Model modules are imported automatically through `pkgutil` when
+`oxi.interfaces` is loaded, so you do not need to import your model class
+manually.
 
----
-
-## Переопределение методов (monkey patching)
+## Method Overrides
 
 ### interfaces()
 
-Используйте переопределение, когда нужно:
+Override `interfaces()` when you need to:
 
-- Преобразовать формат IP-адреса (например, `netmask` → `prefix_length`).
-- Декодировать escape-последовательности в описаниях.
-- Переименовать ключи, не совпадающие с контрактом.
-- Фильтровать служебные интерфейсы.
+- Convert dotted decimal netmasks to prefix lengths.
+- Decode escaped descriptions.
+- Rename keys that do not match the contract.
+- Filter service-only interfaces.
 
-**Пример: конвертация маски подсети в префикс**
-
-TTP возвращает `netmask` как `255.255.255.0`, а контракт `Interfaces` ожидает `mask` как целое число (prefix length):
+Example: convert a netmask to a prefix length.
 
 ```python
 from ipaddress import ip_interface
@@ -114,19 +115,17 @@ class MyVendor(BaseDevice):
         return result
 ```
 
-**Пример: фильтрация служебных интерфейсов**
+Example: filter management interfaces.
 
 ```python
 def interfaces(self) -> list[dict]:
     return [
         item for item in self.raw.get("interfaces", [])
-        if not item.get("name", "").startswith("lo")
+        if not item.get("interface", "").startswith("Mgmt")
     ]
 ```
 
-**Пример: декодирование Unicode escape-последовательностей**
-
-Некоторые устройства (например, Keenetic) хранят кириллические описания как `\xd0\xb8\xd0\xbc\xd1\x8f`:
+Example: decode escaped UTF-8 descriptions.
 
 ```python
 def _decode_utf(self, text: str) -> str:
@@ -140,6 +139,7 @@ def _decode_utf(self, text: str) -> str:
         )
     return text
 
+
 def interfaces(self) -> list[dict]:
     interfaces = self.raw.get("interfaces", [])
     for item in interfaces:
@@ -148,75 +148,83 @@ def interfaces(self) -> list[dict]:
     return interfaces
 ```
 
----
-
 ### vlans()
 
-Аналогично `interfaces()`. Используйте для нормализации ID, декодирования названий, обогащения данными из других секций.
+Override `vlans()` to normalize VLAN IDs, expand compressed ranges, decode
+names, or merge details from multiple template groups.
 
-**Пример: добавление префикса к имени VLAN**
+Example: add a generated VLAN name.
 
 ```python
 def vlans(self) -> list[dict]:
     result = []
     for item in self.raw.get("vlans", []):
-        item["description"] = f"VLAN_{item.get('id', '?')}"
+        item["description"] = f"VLAN_{item.get('vlan_id', '?')}"
         result.append(item)
     return result
 ```
 
-**Пример: объединение данных из нескольких секций**
+Example: merge data from another raw group.
 
 ```python
 def vlans(self) -> list[dict]:
-    vlans = {v["id"]: v for v in self.raw.get("vlans", [])}
-    # обогащаем данными из другой секции, если она есть
+    vlans = {item["vlan_id"]: item for item in self.raw.get("vlans", [])}
     for extra in self.raw.get("vlan_details", []):
-        vlan_id = extra.get("id")
+        vlan_id = extra.get("vlan_id")
         if vlan_id in vlans:
             vlans[vlan_id].update(extra)
     return list(vlans.values())
 ```
 
----
+Example: expand a comma-separated VLAN range.
+
+```python
+def _expand_vlan_range(value: str) -> list[str]:
+    result = []
+    for part in value.split(","):
+        if "-" not in part:
+            result.append(part.strip())
+            continue
+        start, end = (int(item) for item in part.split("-", 1))
+        result.extend(str(vlan_id) for vlan_id in range(start, end + 1))
+    return result
+```
 
 ### system()
 
-Переопределяйте, если структура системной секции отличается от ожидаемой контрактом, или нужно вычислить поля:
+Override `system()` when the system section needs computed fields or data from
+another raw group.
 
-**Пример: собрать серийный номер из нескольких полей**
+Example: assemble a serial number from two fields.
 
 ```python
 def system(self) -> dict:
     raw_system = self.raw.get("system", {})
-    # Устройство возвращает серийный номер в двух частях
     part1 = raw_system.get("serial_part1", "")
     part2 = raw_system.get("serial_part2", "")
     raw_system["serial_number"] = f"{part1}-{part2}"
     return raw_system
 ```
 
-**Пример: нормализация строки версии**
+Example: normalize a version string.
 
 ```python
 def system(self) -> dict:
     raw_system = self.raw.get("system", {})
-    # Убираем лишнее из "7.12.1 (stable)" → "7.12.1"
     version = raw_system.get("version", "")
     raw_system["version"] = version.split()[0] if version else version
     return raw_system
 ```
 
----
+## Complete Example
 
-## Полный пример: новое устройство
+Assume a Cisco IOS-like device where:
 
-Допустим, нужно добавить поддержку Cisco IOS, где:
-- IP-адрес и маска разделены пробелом в конфигурации (`ip address 10.0.0.1 255.255.255.0`).
-- Описание интерфейса может содержать несколько слов.
-- Серийный номер разделён дефисом в двух строках.
+- IP address and netmask are separated by a space.
+- Interface descriptions can contain several words.
+- System fields are present in separate lines.
 
-**Шаблон** (`oxi/interfaces/models/templates/cisco.ttp`):
+Template: `oxi/interfaces/models/templates/cisco.ttp`
 
 ```xml
 <vars>
@@ -240,12 +248,12 @@ interface {{ interface | _start_ }}
 </group>
 
 <group name="vlans">
-vlan {{ id | _start_ }}
- name {{ description }}
+vlan {{ vlan_id | _start_ }}
+ name {{ name | ORPHRASE }}
 </group>
 ```
 
-**Класс устройства** (`oxi/interfaces/models/cisco.py`):
+Device model: `oxi/interfaces/models/cisco.py`
 
 ```python
 from ipaddress import ip_interface
@@ -260,12 +268,10 @@ class CiscoIOS(BaseDevice):
     def interfaces(self) -> list[dict]:
         result = []
         for item in self.raw.get("interfaces", []):
-            # Конвертируем маску подсети в длину префикса
             if item.get("ip_address") and item.get("netmask"):
                 iface = ip_interface(f"{item['ip_address']}/{item['netmask']}")
                 item["mask"] = iface.network.prefixlen
                 item.pop("netmask", None)
-            # Фильтруем интерфейсы управления
             if item.get("interface", "").startswith("Mgmt"):
                 continue
             result.append(item)
@@ -273,53 +279,48 @@ class CiscoIOS(BaseDevice):
 
     def system(self) -> dict:
         raw_system = self.raw.get("system", {})
-        # Нормализуем версию: "15.2(4)M3" → оставляем как есть
-        # Убираем лишние пробелы в модели
         if raw_system.get("model"):
             raw_system["model"] = raw_system["model"].strip()
         return raw_system
 ```
 
----
+## Expected Contract
 
-## Контракт: ожидаемые структуры
+Methods must return structures accepted by `oxi.interfaces.contract`.
 
-Методы должны возвращать данные в следующем формате. Контракт жёстко проверяется Pydantic.
-
-### `system()` → `dict`
+### `system() -> dict`
 
 ```python
 {
-    "model": "RB951Ui-2nD",       # str, обязательно
-    "serial_number": "B88C0B31117B",  # str, обязательно
-    "version": "7.12.1",          # str, обязательно
+    "model": "RB951Ui-2nD",
+    "serial_number": "B88C0B31117B",
+    "version": "7.12.1",
 }
 ```
 
-### `interfaces()` → `list[dict]`
+### `interfaces() -> list[dict]`
 
 ```python
 [
     {
-        "interface": "ether1",          # str, обязательно (alias для поля name)
-        "ip_address": "192.168.1.1",    # str | None
-        "mask": 24,                     # int | None (длина префикса)
-        "description": "LAN",          # str | None
+        "interface": "ether1",
+        "ip_address": "192.168.1.1",
+        "mask": 24,
+        "description": "LAN",
     },
-    ...
 ]
 ```
 
-### `vlans()` → `list[dict]`
+### `vlans() -> list[dict]`
 
 ```python
 [
     {
-        "id": 10,                       # int, обязательно (alias для поля vlan_id)
-        "description": "MGMT",         # str | None (alias для поля name)
+        "vlan_id": 10,
+        "description": "MGMT",
     },
-    ...
 ]
 ```
 
-> Если имя ключа в словаре совпадает с **alias** поля Pydantic-модели, а не с именем атрибута — используйте alias. Модели сконфигурированы с `populate_by_name=True`, поэтому принимаются оба варианта.
+The Pydantic models use `populate_by_name=True` for aliased models, so both
+field names and aliases are accepted where aliases exist.

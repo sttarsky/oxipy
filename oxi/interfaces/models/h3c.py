@@ -6,14 +6,16 @@ class H3C(BaseDevice):
     template = "h3c.ttp"
 
     def vlans(self) -> list[dict]:
-        vlan_list = self.raw["vlans"]
-        vlans = []
+        vlan_list = self.raw.get("vlans", [])
+        vlans: list[dict] = []
         for item in vlan_list:
-            if item.get("vlans_id"):
-                vlans.extend([{'vlan_id': vln }for vln in item.get("vlans_id")])
-            else:
+            vlan_ids = item.get("vlans_id")
+            if not vlan_ids:
                 vlans.append(item)
+                continue
+            vlans.extend({"vlan_id": vlan_id} for vlan_id in vlan_ids)
         return vlans
+
 
 if __name__ == "__main__":
     with open("./test5.txt") as file:
