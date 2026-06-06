@@ -23,3 +23,17 @@ def expand_vlan_range(value: str | list[str]) -> list[str]:
         else:
             result.append(part)
     return result
+
+
+def decode_utf(text: str):
+    """Decode escaped UTF-8 descriptions."""
+    if "\\x" in text:
+        desc = text.strip('"')
+        decoded = (
+            desc.encode("utf-8")
+            .decode("unicode_escape")
+            .encode("latin1")
+            .decode("utf-8")
+        )
+        return decoded
+    return text

@@ -5,42 +5,37 @@ from oxi.exception import OxiAPIError
 from oxi.interfaces import device_registry
 from oxi.interfaces.base import BaseDevice
 from oxi.interfaces.contract import Interfaces, System
-from oxi.interfaces.utils import expand_vlan_range as eltex_expand
-from oxi.interfaces.utils import expand_vlan_range as qtech_expand
+from oxi.interfaces.utils import decode_utf, expand_vlan_range
 
 
 class TestExpandVlanRange:
-    @pytest.mark.parametrize("expand", [qtech_expand, eltex_expand])
+    @pytest.mark.parametrize("expand", [expand_vlan_range])
     def test_simple_and_range(self, expand):
         assert expand("1,7,14-15") == ["1", "7", "14", "15"]
 
-    @pytest.mark.parametrize("expand", [qtech_expand, eltex_expand])
+    @pytest.mark.parametrize("expand", [expand_vlan_range])
     def test_reversed_range_is_normalized(self, expand):
         assert expand("15-13") == ["13", "14", "15"]
 
-    @pytest.mark.parametrize("expand", [qtech_expand, eltex_expand])
+    @pytest.mark.parametrize("expand", [expand_vlan_range])
     def test_non_numeric_range_kept_verbatim(self, expand):
         assert expand("a-b") == ["a-b"]
 
-    @pytest.mark.parametrize("expand", [qtech_expand, eltex_expand])
+    @pytest.mark.parametrize("expand", [expand_vlan_range])
     def test_empty(self, expand):
         assert expand("") == []
 
-    @pytest.mark.parametrize("expand", [qtech_expand, eltex_expand])
+    @pytest.mark.parametrize("expand", [expand_vlan_range])
     def test_list_input(self, expand):
         assert expand(["1", "3-4"]) == ["1", "3", "4"]
 
 
-class TestKeeneticDecodeUtf:
-    @pytest.fixture(scope="class")
-    def keenetic(self):
-        return device_registry["keenetic"](load("keenetic"))
+class TestDecodeUtf:
+    def test_plain_text_passthrough(self):
+        assert decode_utf("Plain ASCII") == "Plain ASCII"
 
-    def test_plain_text_passthrough(self, keenetic):
-        assert keenetic._decode_utf("Plain ASCII") == "Plain ASCII"
-
-    def test_escaped_utf8_is_decoded(self, keenetic):
-        assert keenetic._decode_utf(r'"\xd0\x94\xd0\xbe\xd0\xbc"') == "Дом"
+    def test_escaped_utf8_is_decoded(self):
+        assert decode_utf(r'"\xd0\x94\xd0\xbe\xd0\xbc"') == "Дом"
 
 
 class TestTemplateValidation:
