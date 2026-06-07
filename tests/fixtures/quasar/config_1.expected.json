@@ -1,0 +1,58 @@
+{
+  "system": {
+    "model": "Quasar-T-Q-0002",
+    "serial_number": "WEE1C1CC0004A",
+    "version": "0.2.17.2022-10-21"
+  },
+  "interfaces": [
+    {
+      "interface": "7/4",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_08_N0_p1"
+    },
+    {
+      "interface": "8/1",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_09_N1_p0"
+    },
+    {
+      "interface": "8/2",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_09_N0_p0"
+    },
+    {
+      "interface": "8/3",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_10_N1_p0"
+    },
+    {
+      "interface": "8/4",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_10_N0_p0"
+    },
+    {
+      "interface": "9/1",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_11_N0_p0"
+    },
+    {
+      "interface": "9/2",
+      "ip_address": null,
+      "mask": null,
+      "description": "IN DWDM / OUT TEST_HW_11_N0_p1"
+    },
+    {
+      "interface": "ethernet",
+      "ip_address": "25.25.1.221",
+      "mask": 24,
+      "description": null
+    }
+  ],
+  "vlans": []
+}
