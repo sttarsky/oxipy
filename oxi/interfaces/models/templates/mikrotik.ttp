@@ -42,6 +42,6 @@ add comment={{ comment | _start_ | ORPHRASE | exclude("disabled=") | strip('"')}
 ## disabled with comment with/without quotes
 add comment={{ comment | _start_ | ORPHRASE | exclude("disabled=") | strip('"')}} disabled={{ disabled | replace("yes","True") | strip('"') }} interface={{ interface }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
 ## disabled no comment
-add interface={{ interface | _start_ }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }} disabled={{ disabled | replace("yes","True") | strip('"') }}
+add disabled={{ disabled | _start_ | replace("yes","True") | strip('"') }} interface={{ interface }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
 </group>
 
