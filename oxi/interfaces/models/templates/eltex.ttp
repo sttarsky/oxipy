@@ -26,6 +26,8 @@ Active-image: {{ ignore }} {{ _start_ }}
 <group name="interfaces">
 interface {{ interface | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
+ name {{ description }}
+ description {{ description }}
 </group>
 
 <group name="vlans">
