@@ -1,0 +1,161 @@
+{
+  "system": {
+    "model": "Sprinter (KN-3710)",
+    "serial_number": "7777777",
+    "version": "4.03.C.6.2-7"
+  },
+  "interfaces": [
+    {
+      "interface": "GigabitEthernet0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "GigabitEthernet0/1",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "GigabitEthernet0/2",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "GigabitEthernet0/3",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "GigabitEthernet0/0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster0/AccessPoint0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster0/AccessPoint1",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster0/AccessPoint2",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster0/WifiStation0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster1",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster1/AccessPoint0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster1/AccessPoint1",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster1/AccessPoint2",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "WifiMaster1/WifiStation0",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "Bridge0",
+      "ip_address": "17.36.1.1",
+      "mask": 24,
+      "description": "Home network"
+    },
+    {
+      "interface": "Bridge1",
+      "ip_address": "10.1.30.1",
+      "mask": 24,
+      "description": "Guest network"
+    },
+    {
+      "interface": "Bridge2",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "OpenVPN0",
+      "ip_address": null,
+      "mask": null,
+      "description": "test_HW-udp"
+    },
+    {
+      "interface": "OpenVPN2",
+      "ip_address": null,
+      "mask": null,
+      "description": "test_HW-tcp"
+    },
+    {
+      "interface": "Wireguard0",
+      "ip_address": "10.3.100.1",
+      "mask": 24,
+      "description": "test_HW"
+    },
+    {
+      "interface": "Wireguard1",
+      "ip_address": "10.1.100.1",
+      "mask": 24,
+      "description": "test_HW"
+    },
+    {
+      "interface": "Wireguard2",
+      "ip_address": "10.2.100.1",
+      "mask": 24,
+      "description": "test_HW"
+    }
+  ],
+  "vlans": [
+    {
+      "vlan_id": 1,
+      "description": "Home VLAN"
+    },
+    {
+      "vlan_id": 2,
+      "description": "Подключение Ethernet"
+    },
+    {
+      "vlan_id": 3,
+      "description": "Home network"
+    }
+  ]
+}
