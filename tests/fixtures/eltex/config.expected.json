@@ -1,0 +1,137 @@
+{
+  "system": {
+    "model": "",
+    "serial_number": "ESG7007778",
+    "version": "6.6.9.3"
+  },
+  "interfaces": [
+    {
+      "interface": "TenGigabitEthernet1/0/2",
+      "ip_address": null,
+      "mask": null,
+      "description": "FREE"
+    },
+    {
+      "interface": "TenGigabitEthernet1/0/11",
+      "ip_address": null,
+      "mask": null,
+      "description": "FREE"
+    },
+    {
+      "interface": "vlan 1700",
+      "ip_address": "13.36.8.1",
+      "mask": 24,
+      "description": "sw-test_HW"
+    },
+    {
+      "interface": "vlan 666",
+      "ip_address": null,
+      "mask": null,
+      "description": "test"
+    },  
+    {
+      "interface": "vlan 777",
+      "ip_address": null,
+      "mask": null,
+      "description": "test2"
+    }
+  ],
+  "vlans": [
+    {
+      "vlan_id": 1700,
+      "description": "sw-test_HW"
+    },
+    {
+      "vlan_id": 114,
+      "description": null
+    },
+    {
+      "vlan_id": 115,
+      "description": null
+    },
+    {
+      "vlan_id": 120,
+      "description": null
+    },
+    {
+      "vlan_id": 130,
+      "description": null
+    },
+    {
+      "vlan_id": 414,
+      "description": null
+    },
+    {
+      "vlan_id": 610,
+      "description": null
+    },
+    {
+      "vlan_id": 999,
+      "description": null
+    },
+    {
+      "vlan_id": 1000,
+      "description": null
+    },
+    {
+      "vlan_id": 1701,
+      "description": null
+    },
+    {
+      "vlan_id": 1702,
+      "description": null
+    },
+    {
+      "vlan_id": 1703,
+      "description": null
+    },
+    {
+      "vlan_id": 1705,
+      "description": null
+    },
+    {
+      "vlan_id": 1801,
+      "description": null
+    },
+    {
+      "vlan_id": 2001,
+      "description": null
+    },
+    {
+      "vlan_id": 2011,
+      "description": null
+    },
+    {
+      "vlan_id": 2021,
+      "description": null
+    },
+    {
+      "vlan_id": 2022,
+      "description": null
+    },
+    {
+      "vlan_id": 3157,
+      "description": null
+    },
+    {
+      "vlan_id": 3158,
+      "description": null
+    },
+    {
+      "vlan_id": 3333,
+      "description": null
+    },
+    {
+      "vlan_id": 3334,
+      "description": null
+    },
+    {
+      "vlan_id": 666,
+      "description": "test"
+    },
+    {
+      "vlan_id": 777,
+      "description": "test2"
+    }
+  ]
+}
