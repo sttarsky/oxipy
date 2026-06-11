@@ -8,6 +8,7 @@ wheels/
 main.py
 # Virtual environments
 .venv
+.python-version
 .idea
 .DS_Store
 .vscode
