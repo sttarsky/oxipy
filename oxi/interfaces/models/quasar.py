@@ -21,17 +21,3 @@ class Quasar(BaseDevice):
         if ether_interface:
             interfaces.append(ether_interface)
         return interfaces
-
-
-if __name__ == "__main__":
-    with open("./test7.txt") as file:
-        data = file.read()
-    quasar = Quasar(data)
-    qt = quasar.parse()
-    print(qt)
-    print()
-    with open("./test8.txt") as file:
-        data = file.read()
-    quasar = Quasar(data)
-    qt = quasar.parse()
-    print(qt)

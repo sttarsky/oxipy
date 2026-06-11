@@ -67,6 +67,19 @@ class BaseDevice(ABC):
         """
         return self.raw.get("system", None)
 
+    @staticmethod
+    def _as_list(data) -> list:
+        """Normalize a TTP group result to a list.
+
+        TTP returns a single dict when a group matches exactly one entry and a
+        list when it matches several. Callers always expect a list.
+        """
+        if data is None:
+            return []
+        if isinstance(data, dict):
+            return [data]
+        return data
+
     def _validate_contract(self) -> dict:
         if self.raw is None:
             msg = (
@@ -76,7 +89,7 @@ class BaseDevice(ABC):
             )
             raise OxiAPIError(msg, status_code=404)
         system_data = self.system()
-        interfaces_data = self.interfaces() or []
+        interfaces_data = self._as_list(self.interfaces())
         result = {
             "system": System(**system_data),
             "interfaces": [Interfaces(**item) for item in interfaces_data],
@@ -89,7 +102,7 @@ class BaseDevice(ABC):
                     f"{self.__class__.__name__}: template '{self.template}' declares optional group "
                     f"'vlans', but TTP did not return it."
                 )
-            vlans_data = self.vlans() or []
+            vlans_data = self._as_list(self.vlans())
             result["vlans"] = [Vlans(**item) for item in vlans_data]
         return result
 

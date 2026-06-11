@@ -9,6 +9,7 @@ main.py
 # Virtual environments
 .venv
 .idea
+.DS_Store
 
 # etc files
 *.txt

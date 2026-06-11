@@ -14,13 +14,13 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
-# VRP (R) software, Version {{ version }} {{ _line_ }}
+# VRP (R) software, Version {{ version }} ({{ model }} {{ _line_ }}
 # ESN of slot {{ slot_number }}: {{ serial_number }}
 </group>
 
 <group name="interfaces">
 interface {{ interface }}
- description {{ description }}
+ description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
 <group name="vlans">

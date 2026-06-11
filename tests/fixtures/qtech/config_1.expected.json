@@ -1,0 +1,185 @@
+{
+  "system": {
+    "model": "QSW-8330-40T-DC",
+    "serial_number": "6060606060606060",
+    "version": "96279"
+  },
+  "interfaces": [
+    {
+      "interface": "GigaEthernet1/0/9",
+      "ip_address": null,
+      "mask": null,
+      "description": "FREE"
+    },
+    {
+      "interface": "VLAN1",
+      "ip_address": "192.168.0.1",
+      "mask": 16,
+      "description": null
+    },
+    {
+      "interface": "VLAN1002",
+      "ip_address": "13.36.8.1",
+      "mask": 24,
+      "description": "test-1002"
+    }
+  ],
+  "vlans": [
+    {
+      "vlan_id": 772,
+      "description": "test"
+    },
+    {
+      "vlan_id": 888,
+      "description": "test_super"
+    },
+    {
+      "vlan_id": 1,
+      "description": null
+    },
+    {
+      "vlan_id": 7,
+      "description": null
+    },
+    {
+      "vlan_id": 14,
+      "description": null
+    },
+    {
+      "vlan_id": 15,
+      "description": null
+    },
+    {
+      "vlan_id": 44,
+      "description": null
+    },
+    {
+      "vlan_id": 101,
+      "description": null
+    },
+    {
+      "vlan_id": 102,
+      "description": null
+    },
+    {
+      "vlan_id": 115,
+      "description": null
+    },
+    {
+      "vlan_id": 117,
+      "description": null
+    },
+    {
+      "vlan_id": 118,
+      "description": null
+    },
+    {
+      "vlan_id": 119,
+      "description": null
+    },
+    {
+      "vlan_id": 120,
+      "description": null
+    },
+    {
+      "vlan_id": 121,
+      "description": null
+    },
+    {
+      "vlan_id": 122,
+      "description": null
+    },
+    {
+      "vlan_id": 123,
+      "description": null
+    },
+    {
+      "vlan_id": 124,
+      "description": null
+    },
+    {
+      "vlan_id": 130,
+      "description": null
+    },
+    {
+      "vlan_id": 131,
+      "description": null
+    },
+    {
+      "vlan_id": 132,
+      "description": null
+    },
+    {
+      "vlan_id": 133,
+      "description": null
+    },
+    {
+      "vlan_id": 134,
+      "description": null
+    },
+    {
+      "vlan_id": 135,
+      "description": null
+    },
+    {
+      "vlan_id": 136,
+      "description": null
+    },
+    {
+      "vlan_id": 139,
+      "description": null
+    },
+    {
+      "vlan_id": 167,
+      "description": null
+    },
+    {
+      "vlan_id": 200,
+      "description": null
+    },
+    {
+      "vlan_id": 201,
+      "description": null
+    },
+    {
+      "vlan_id": 202,
+      "description": null
+    },
+    {
+      "vlan_id": 203,
+      "description": null
+    },
+    {
+      "vlan_id": 204,
+      "description": null
+    },
+    {
+      "vlan_id": 205,
+      "description": null
+    },
+    {
+      "vlan_id": 1607,
+      "description": null
+    },
+    {
+      "vlan_id": 2016,
+      "description": null
+    },
+    {
+      "vlan_id": 2085,
+      "description": null
+    },
+    {
+      "vlan_id": 2086,
+      "description": null
+    },
+    {
+      "vlan_id": 2087,
+      "description": null
+    },
+    {
+      "vlan_id": 2088,
+      "description": null
+    }
+  ]
+}
