@@ -1,10 +1,11 @@
+import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from pathlib import Path
+
 from ttp import ttp
+
 from oxi.exception import OxiAPIError
-from oxi.interfaces.contract import Device
-import xml.etree.ElementTree as ET
-from oxi.interfaces.contract import Interfaces, System, Vlans
+from oxi.interfaces.contract import Device, Interfaces, System, Vlans
 
 
 class BaseDevice(ABC):
@@ -40,7 +41,7 @@ class BaseDevice(ABC):
 
         Raises:
             ValueError: if raw data cannot be validated by the contract.
-        """
+        """  # noqa: E501
         return self.raw.get("vlans", [])
 
     def interfaces(self) -> list[dict]:
@@ -52,7 +53,7 @@ class BaseDevice(ABC):
 
         Raises:
             ValueError: if raw data cannot be validated by the contract.
-        """
+        """  # noqa: E501
         return self.raw.get("interfaces", [])
 
     def system(self) -> dict:
@@ -82,11 +83,7 @@ class BaseDevice(ABC):
 
     def _validate_contract(self) -> dict:
         if self.raw is None:
-            msg = (
-                f"Node {self.name} not found"
-                if self.name
-                else "Node not found"
-            )
+            msg = f"Node {self.name} not found" if self.name else "Node not found"
             raise OxiAPIError(msg, status_code=404)
         system_data = self.system()
         interfaces_data = self._as_list(self.interfaces())
@@ -99,8 +96,8 @@ class BaseDevice(ABC):
         if "vlans" in self._declared_sections:
             if "vlans" not in self.raw:
                 raise ValueError(
-                    f"{self.__class__.__name__}: template '{self.template}' declares optional group "
-                    f"'vlans', but TTP did not return it."
+                    f"{self.__class__.__name__}: template '{self.template}' "
+                    f"declares optional group 'vlans', but TTP did not return it."
                 )
             vlans_data = self._as_list(self.vlans())
             result["vlans"] = [Vlans(**item) for item in vlans_data]

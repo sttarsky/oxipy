@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from requests import HTTPError
@@ -35,7 +35,7 @@ def _looks_like_node_not_found_html(e: "HTTPError") -> bool:
 
 
 class OxiAPIError(Exception):
-    def __init__(self, message: str, status_code: Optional[int] = None):
+    def __init__(self, message: str, status_code: int | None = None):
         super().__init__(message)
         self.status_code = status_code
         self.message = message

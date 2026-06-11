@@ -1,8 +1,8 @@
-from typing import Optional
 from requests import HTTPError, Session
 
 from oxi.adapter import OxiAdapter
 from oxi.exception import OxiAPIError
+
 from .node import Node
 
 
@@ -10,8 +10,8 @@ class OxiAPI:
     def __init__(
         self,
         url: str,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
         verify: bool = True,
     ):
         self.base_url = url.rstrip("/")
@@ -20,8 +20,8 @@ class OxiAPI:
 
     def __create_session(
         self,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
+        username: str | None = None,
+        password: str | None = None,
         verify: bool = True,
     ) -> Session:
         session = Session()

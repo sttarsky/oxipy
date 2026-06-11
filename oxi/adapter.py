@@ -1,4 +1,3 @@
-from typing import Optional
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
@@ -6,7 +5,7 @@ from urllib3.util import Retry
 class OxiAdapter(HTTPAdapter):
     def __init__(
         self,
-        timeout: Optional[int] = None,
+        timeout: int | None = None,
         max_retries: int = 3,
         *args,
         **kwargs,

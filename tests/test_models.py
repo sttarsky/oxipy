@@ -1,8 +1,8 @@
 import json
 
 import pytest
-
 from conftest import FIXTURES, load
+
 from oxi.interfaces import device_registry
 
 MODEL_CASES = [

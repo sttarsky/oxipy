@@ -1,10 +1,9 @@
 import pytest
-
 from conftest import load
+
 from oxi.exception import OxiAPIError
 from oxi.interfaces import device_registry
 from oxi.interfaces.base import BaseDevice
-from oxi.interfaces.contract import Interfaces, System
 from oxi.interfaces.utils import decode_utf, expand_vlan_range
 
 

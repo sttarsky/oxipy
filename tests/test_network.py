@@ -1,7 +1,7 @@
 import pytest
 import responses
-
 from conftest import load
+
 from oxi import OxiAPI
 from oxi.exception import OxiAPIError
 
@@ -84,4 +84,4 @@ def test_unknown_model_raises_value_error():
 
     api = OxiAPI(url=BASE)
     with pytest.raises(ValueError, match="not found in registry"):
-        api.node("HQ").config
+        _ = api.node("HQ").config

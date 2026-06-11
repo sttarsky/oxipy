@@ -10,6 +10,6 @@ main.py
 .venv
 .idea
 .DS_Store
-
+.vscode
 # etc files
 *.txt

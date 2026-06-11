@@ -3,5 +3,5 @@ import pkgutil
 
 package = __package__
 
-for loader, module_name, is_pkg in pkgutil.iter_modules(__path__):
+for _, module_name, _ in pkgutil.iter_modules(__path__):
     importlib.import_module(f"{package}.{module_name}")

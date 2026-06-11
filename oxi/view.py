@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 
 from .conf import NodeConfig
 
-
 if TYPE_CHECKING:
     from requests import Session
 

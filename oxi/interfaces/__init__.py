@@ -1,4 +1,4 @@
-from typing import Callable, Type
+from collections.abc import Callable
 
 from .base import BaseDevice
 
@@ -7,7 +7,7 @@ device_registry = {}
 
 def register_parser(
     name: list[str] | str,
-) -> Callable[[Type[BaseDevice]], Type[BaseDevice]]:
+) -> Callable[[type[BaseDevice]], type[BaseDevice]]:
     def wrapper(cls):
         name_list = []
         if isinstance(name, str):

@@ -1,4 +1,5 @@
 from ipaddress import ip_interface
+
 from oxi.interfaces import register_parser
 from oxi.interfaces.base import BaseDevice
 from oxi.interfaces.utils import decode_utf

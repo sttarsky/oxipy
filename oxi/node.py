@@ -6,7 +6,6 @@ from oxi.exception import OxiAPIError
 
 from .view import NodeView
 
-
 if TYPE_CHECKING:
     from requests import Session
 
