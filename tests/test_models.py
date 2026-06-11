@@ -12,6 +12,7 @@ MODEL_CASES = [
     ("qtech", "config_2.conf", "config_2.expected.json"),
     ("huawei", "config.conf", "config.expected.json"),
     ("eltex", "config.conf", "config.expected.json"),
+    ("h3c", "config.conf", "config.expected.json"),
     ("quasar", "config_1.conf", "config_1.expected.json"),
     ("quasar", "config_2.conf", "config_2.expected.json"),
 ]

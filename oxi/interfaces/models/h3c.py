@@ -15,10 +15,3 @@ class H3C(BaseDevice):
                 continue
             vlans.extend({"vlan_id": vlan_id} for vlan_id in vlan_ids)
         return vlans
-
-
-if __name__ == "__main__":
-    with open("./test5.txt") as file:
-        data = file.read()
-    h3c = H3C(data)
-    print(h3c.parse())

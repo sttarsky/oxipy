@@ -26,13 +26,13 @@ Active-image: {{ ignore }} {{ _start_ }}
 <group name="interfaces">
 interface {{ interface | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
- name {{ description }}
- description {{ description }}
+ name {{ description | ORPHRASE}}
+ description {{ description | ORPHRASE }}
 </group>
 
 <group name="vlans">
 interface vlan {{ vlan_id | _start_ }}
- name {{ name  }}
+ name {{ name | ORPHRASE }}
 
 vlan {{ _db_ | _start_ }}
  vlan {{ vlan_ids | joinmatches(',') | unrange("-", ",") | split(",")}}
