@@ -1,0 +1,47 @@
+<doc>
+    some templates
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": ""
+}
+default_interfaces = {
+    "disabled": "False"
+}
+default_vlans = {
+    "disabled": "False",
+    "mtu": None
+    }
+</vars>
+
+<group name="system" default="default_system">
+# version: {{ version }}{{ ignore('.*') }}
+# model = {{ model }}
+# serial number = {{ serial_number }}
+</group>
+
+<group name="interfaces" default="default_interfaces">
+/ip address
+## not disabled and no comment
+add address={{ ip_address | _start_ }}/{{ mask }} interface={{ name }} network={{ network }}
+## not disabled and comment with/without quotes
+add address={{ ip_address | _start_ }}/{{ mask }} comment={{ description | ORPHRASE | exclude("disabled=") | strip('"')}} interface={{ name }} network={{ network }}
+## disabled no comment
+add address={{ ip_address | _start_ }}/{{ mask }} disabled={{ disabled | replace("yes","True") | strip('"')}} interface={{ name }} network={{ network }}
+## disabled with comment with/without quotes
+add address={{ ip_address | _start_ }}/{{ mask }} comment={{ description | ORPHRASE | exclude("disabled=") | strip('"') }} disabled={{ disabled }} interface={{ name }} network={{ network }}
+</group>
+
+<group name="vlans">
+/interface vlan
+## not disabled and no comment
+add interface={{ interface | _start_ }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
+## not disabled and comment with/without quotes
+add comment={{ comment | _start_ | ORPHRASE | exclude("disabled=") | strip('"')}} interface={{ interface }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
+## disabled with comment with/without quotes
+add comment={{ comment | _start_ | ORPHRASE | exclude("disabled=") | strip('"')}} disabled={{ disabled | replace("yes","True") | strip('"') }} interface={{ interface }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
+## disabled no comment
+add disabled={{ disabled | _start_ | replace("yes","True") | strip('"') }} interface={{ interface }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}
+</group>
+

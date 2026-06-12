@@ -1,0 +1,37 @@
+<doc>
+Base template for a new device parser. Copy this file, rename it to
+&lt;vendor&gt;.ttp, and fill the groups for the target configuration format.
+
+Required groups: system, interfaces.
+Optional group: vlans. Add it only when VLAN parsing is implemented.
+
+system must return one dictionary with: model, serial_number, version.
+interfaces must return a list of dictionaries with: interface, ip_address,
+mask, description. Use a prefix length for mask; convert dotted decimal masks
+with `to_cidr` or in the device class.
+vlans must return dictionaries with vlan_id and optional name/description.
+
+Useful TTP modifiers: ORPHRASE, _start_, strip(), replace(), exclude(),
+ignore, ignore('.*'), to_cidr, unrange(), split().
+
+See docs/templates.md for details.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+    ...
+</group>
+
+<group name="interfaces">
+    ...
+</group>
+
+<group name="vlans">
+    ...
+</group>

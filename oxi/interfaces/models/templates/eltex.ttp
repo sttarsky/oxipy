@@ -1,0 +1,39 @@
+<doc>
+Eltex configuration parser.
+
+The system group reads software version data and the serial group extracts
+serial numbers from the unit table. The interfaces group parses interface IP
+settings. The vlans group supports named VLAN interfaces and compressed VLAN
+lists.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+Active-image: {{ ignore }} {{ _start_ }}
+! Version: {{ version }}
+</group>
+<group name="serial" method="table">
+! Unit MAC address Hardware version Serial number
+!  {{ unit | exclude("-") }} {{ mac_address }} {{ hardware_version }} {{ serial_number }}
+</group>
+
+<group name="interfaces">
+interface {{ interface | ORPHRASE }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
+ name {{ description | ORPHRASE}}
+ description {{ description | ORPHRASE }}
+</group>
+
+<group name="vlans">
+interface vlan {{ vlan_id | _start_ }}
+ name {{ name | ORPHRASE }}
+
+vlan {{ _db_ | _start_ }}
+ vlan {{ vlan_ids | joinmatches(',') | unrange("-", ",") | split(",")}}
+</group>

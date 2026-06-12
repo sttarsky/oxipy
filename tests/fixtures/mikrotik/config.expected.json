@@ -1,0 +1,43 @@
+{
+  "system": {
+    "model": "C52iG-5HaxD2HaxD",
+    "serial_number": "HE108BBGW0B",
+    "version": "7.12"
+  },
+  "interfaces": [
+    {
+      "interface": "bridge.LAN",
+      "ip_address": "172.16.3.1",
+      "mask": 24,
+      "description": null
+    },
+    {
+      "interface": "ether1",
+      "ip_address": "10.38.3.245",
+      "mask": 24,
+      "description": null
+    },
+    {
+      "interface": "wireguard2",
+      "ip_address": "10.1.100.2",
+      "mask": 24,
+      "description": null
+    },
+    {
+      "interface": "ether4",
+      "ip_address": "100.10.10.1",
+      "mask": 24,
+      "description": null
+    }
+  ],
+  "vlans": [
+    {
+      "vlan_id": 255,
+      "description": "test vlan"
+    },
+    {
+      "vlan_id": 254,
+      "description": "test test vlan"
+    }
+  ]
+}

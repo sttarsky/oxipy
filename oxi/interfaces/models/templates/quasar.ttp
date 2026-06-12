@@ -1,0 +1,35 @@
+<doc>
+Quasar configuration parser.
+
+The system group supports Assembly-based and Engine-based firmware blocks. The
+interfaces group parses the management Ethernet address, while bulkinterfaces
+collects per-port descriptions that the Python model merges into interface
+records.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+# Component Version {{ _start_ }}
+# Assembly {{ version }}
+# Product Name {{ model | ORPHRASE }}
+# Product Serial Number {{ serial_number }}
+
+# Subsystem Version {{ _start_ }}
+# Engine {{ version }}
+# Product Name {{ model | ORPHRASE }}
+# Product Serial Number {{ serial_number }}
+</group>
+
+<group name="interfaces">
+{{ ignore("\\s*") }}config {{ interface }} ipv4 address {{ ip_address }}/{{ mask }} gateway {{ gateway }} {{ ignore }}
+</group>
+
+<group name="bulkinterfaces.{{ interface }}">
+{{ ignore("\\s*") }}config interface {{ interface | _start_ }} description {{ description | ORPHRASE | strip('"')}}
+</group>

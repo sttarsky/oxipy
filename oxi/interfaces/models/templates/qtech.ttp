@@ -1,0 +1,41 @@
+<doc>
+Qtech switch configuration parser.
+
+The system group reads the model, serial number, and build number. For Qtech,
+system.version intentionally stores the build number from lines like
+`Version 2.2.0C Build 96279`.
+
+The interfaces group parses CLI interface blocks and converts dotted decimal
+masks to prefix lengths. The vlans group supports named VLANs, comma-separated
+VLAN lists, ranges, and continuation lines.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+! {{ model | ORPHRASE | _start_ }} Series Software, Version {{ ignore }} Build {{ version | strip(",") }}{{ ignore('.*') }}
+! Serial num:{{ serial_number | strip(",") }}{{ ignore('.*') }}
+
+! System description : {{ description | PHRASE | _start_ }}({{ model }}) By {{ vendor }}
+! System description : {{ description | PHRASE | _start_ }}({{ model }})
+! System software version : {{ description | PHRASE }}, Release({{ version }})
+! System serial number : {{ serial_number }}
+</group>
+
+<group name="interfaces">
+interface {{ interface | ORPHRASE }}
+ description {{ description | ORPHRASE }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
+</group>
+
+<group name="vlans">
+vlan {{ vlan_ids | contains(",", "-") | unrange("-", ",") }}
+,{{ vlan_tail | unrange("-", ",") }}
+vlan {{ vlan_id | _start_ }}
+ name {{ name | ORPHRASE }}
+</group>

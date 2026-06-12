@@ -1,0 +1,95 @@
+{
+  "system": {
+    "model": "S5731",
+    "serial_number": "102266666666",
+    "version": "5.170"
+  },
+  "interfaces": [
+    {
+      "interface": "GigabitEthernet0/0/33",
+      "ip_address": null,
+      "mask": null,
+      "description": null
+    },
+    {
+      "interface": "Vlanif120",
+      "ip_address": "10.26.196.254",
+      "mask": 24,
+      "description": "SSH"
+    }
+  ],
+  "vlans": [
+    {
+      "vlan_id": 13,
+      "description": null
+    },
+    {
+      "vlan_id": 26,
+      "description": null
+    },
+    {
+      "vlan_id": 101,
+      "description": null
+    },
+    {
+      "vlan_id": 102,
+      "description": null
+    },
+    {
+      "vlan_id": 103,
+      "description": null
+    },
+    {
+      "vlan_id": 110,
+      "description": null
+    },
+    {
+      "vlan_id": 120,
+      "description": null
+    },
+    {
+      "vlan_id": 130,
+      "description": null
+    },
+    {
+      "vlan_id": 201,
+      "description": null
+    },
+    {
+      "vlan_id": 202,
+      "description": null
+    },
+    {
+      "vlan_id": 203,
+      "description": null
+    },
+    {
+      "vlan_id": 204,
+      "description": null
+    },
+    {
+      "vlan_id": 209,
+      "description": null
+    },
+    {
+      "vlan_id": 210,
+      "description": null
+    },
+    {
+      "vlan_id": 211,
+      "description": null
+    },
+    {
+      "vlan_id": 212,
+      "description": null
+    },
+    {
+      "vlan_id": 350,
+      "description": null
+    },
+    {
+      "vlan_id": 360,
+      "description": null
+    }
+  ]
+}

@@ -1,16 +1,58 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "oxipy"
 version = "0.1.0"
-description = "Oxi API client"
+description = "Python client for Oxidized API with TTP-based config parsing"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
-    "requests>=2.32.5",
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
 ]
+dependencies = [
+    "pydantic>=2.12.5",
+    "requests>=2.32.5",
+    "ttp>=0.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.3",
+    "responses>=0.26.1",
+]
+
+[project.urls]
+Repository = "https://github.com/sttarsky/oxipy"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["oxi*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"oxi" = ["**/*.ttp"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "responses>=0.26.1",
+    "ruff>=0.15.17",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

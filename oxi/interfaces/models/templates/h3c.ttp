@@ -1,0 +1,35 @@
+<doc>
+H3C configuration parser.
+
+The system group reads boot image version and board model data. The interfaces
+group parses interface IP settings. The vlans groups parse both named VLANs and
+range-style VLAN declarations.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+# Boot image version: {{ version }}, Release {{ release }}
+# {{ mpu }} Slot {{ slot }}:
+# BOARD TYPE: {{ model }}
+</group>
+
+<group name="interfaces">
+interface {{ interface }}
+ description {{ description | ORPHRASE }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
+</group>
+
+<group name="vlans">
+vlan {{ vlan_id }}
+ name {{ name }}
+ description {{ description }}
+</group>
+<group name="vlans">
+vlan {{ vlans_id | ORPHRASE | contains(" to ") | unrange(" to ", ",") | split(",") }}
+</group>

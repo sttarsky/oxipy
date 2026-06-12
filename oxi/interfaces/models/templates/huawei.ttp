@@ -1,0 +1,28 @@
+<doc>
+Huawei VRP configuration parser.
+
+The system group reads VRP version and slot ESN data. The interfaces group
+parses interface blocks and converts dotted decimal masks to prefix lengths.
+The vlans group parses `vlan batch` declarations and emits VLAN IDs.
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": "",
+    "version": ""
+}
+</vars>
+
+<group name="system" default="default_system">
+# VRP (R) software, Version {{ version }} ({{ model }} {{ _line_ }}
+# ESN of slot {{ slot_number }}: {{ serial_number }}
+</group>
+
+<group name="interfaces">
+interface {{ interface }}
+ description {{ description | ORPHRASE }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
+</group>
+<group name="vlans">
+vlan batch {{ vlan_ids | ORPHRASE | unrange(" to ", " ") | split(" ")}}
+</group>

@@ -1,0 +1,29 @@
+<doc>
+</doc>
+<vars>
+default_system = {
+    "model": "",
+    "serial_number": ""
+}
+default_interfaces = {}
+</vars>
+
+<group name="system" default="default_system">
+! release: {{ version }}
+! model: {{ model | ORPHRASE }}
+! hw_version: {{ serial_number }}
+</group>
+
+<group name="interfaces">
+interface {{ name | _start_ | exclude("Vlan") }}
+    rename {{ rename }}
+    description {{ description | ORPHRASE | strip('"') }}
+    ip address {{ ip_address }} {{ netmask }}
+    {{ shutdown | re("up") | replace("up","False") | strip('"') }}
+    {{ shutdown | re("down") | replace("down","True") | strip('"') }}
+</group>
+
+<group name="vlans">
+interface {{ ignore }}/Vlan{{ vlan_id }}
+    description {{ description | ORPHRASE | strip('"') }}
+</group>
