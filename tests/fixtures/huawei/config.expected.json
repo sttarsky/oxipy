@@ -7,12 +7,14 @@
   "interfaces": [
     {
       "interface": "GigabitEthernet0/0/33",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": null
     },
     {
       "interface": "Vlanif120",
+      "shutdown": false,
       "ip_address": "10.26.196.254",
       "mask": 24,
       "description": "SSH"

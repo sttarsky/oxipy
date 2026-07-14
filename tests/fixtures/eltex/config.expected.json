@@ -7,30 +7,35 @@
   "interfaces": [
     {
       "interface": "TenGigabitEthernet1/0/2",
+      "shutdown": true,
       "ip_address": null,
       "mask": null,
       "description": "FREE"
     },
     {
       "interface": "TenGigabitEthernet1/0/11",
+      "shutdown": true,
       "ip_address": null,
       "mask": null,
       "description": "FREE"
     },
     {
       "interface": "vlan 1700",
+      "shutdown": false,
       "ip_address": "13.36.8.1",
       "mask": 24,
       "description": "sw-test_HW"
     },
     {
       "interface": "vlan 666",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "test"
     },  
     {
       "interface": "vlan 777",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "test2"

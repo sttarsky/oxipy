@@ -7,48 +7,56 @@
   "interfaces": [
     {
       "interface": "7/4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_08_N0_p1"
     },
     {
       "interface": "8/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_09_N1_p0"
     },
     {
       "interface": "8/2",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_09_N0_p0"
     },
     {
       "interface": "8/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_10_N1_p0"
     },
     {
       "interface": "8/4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_10_N0_p0"
     },
     {
       "interface": "9/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_11_N0_p0"
     },
     {
       "interface": "9/2",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "IN DWDM / OUT TEST_HW_11_N0_p1"
     },
     {
       "interface": "ethernet",
+      "shutdown": false,
       "ip_address": "25.25.1.221",
       "mask": 24,
       "description": null

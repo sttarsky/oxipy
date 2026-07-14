@@ -7,18 +7,21 @@
   "interfaces": [
     {
       "interface": "GigaEthernet1/0/9",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "FREE"
     },
     {
       "interface": "VLAN1",
+      "shutdown": false,
       "ip_address": "192.168.0.1",
       "mask": 16,
       "description": null
     },
     {
       "interface": "VLAN1002",
+      "shutdown": false,
       "ip_address": "13.36.8.1",
       "mask": 24,
       "description": "test-1002"

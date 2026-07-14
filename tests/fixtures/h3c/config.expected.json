@@ -7,72 +7,84 @@
   "interfaces": [
     {
       "interface": "Bridge-Aggregation1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_1"
     },
     {
       "interface": "Bridge-Aggregation2",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_2"
     },
     {
       "interface": "Bridge-Aggregation3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_3"
     },
     {
       "interface": "Bridge-Aggregation4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_4"
     },
     {
       "interface": "NULL0",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": null
     },
     {
       "interface": "Vlan-interface1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": null
     },
     {
       "interface": "Vlan-interface12",
+      "shutdown": false,
       "ip_address": "15.12.16.246",
       "mask": 30,
       "description": "BGP to OSPF1"
     },
     {
       "interface": "Vlan-interface3000",
+      "shutdown": false,
       "ip_address": "192.168.19.254",
       "mask": 25,
       "description": "L3 to HW_TEST_3"
     },
     {
       "interface": "HundredGigE1/0/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_1"
     },
     {
       "interface": "HundredGigE1/0/63",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_2"
     },
     {
       "interface": "M-GigabitEthernet0/0/0",
+      "shutdown": false,
       "ip_address": "192.168.10.101",
       "mask": 24,
       "description": null
     },
     {
       "interface": "M-GigabitEthernet0/0/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": null

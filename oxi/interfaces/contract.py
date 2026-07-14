@@ -26,6 +26,7 @@ class Interfaces(Base):
     ip_address: IPv4Address | None = None
     mask: int | None = None
     description: str | None = None
+    shutdown: bool = False
 
 
 class Vlans(Base):

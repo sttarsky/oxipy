@@ -7,84 +7,98 @@
   "interfaces": [
     {
       "interface": "1/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_1_1"
     },
     {
       "interface": "1/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_1_3"
     },
     {
       "interface": "2/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_2_1"
     },
     {
       "interface": "2/2",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_2_2"
     },
     {
       "interface": "2/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_2_3"
     },
     {
       "interface": "2/4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_2_4"
     },
     {
       "interface": "3/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_3_1"
     },
     {
       "interface": "3/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_3_3"
     },
     {
       "interface": "3/4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_3_4"
     },
     {
       "interface": "4/1",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_4_1"
     },
     {
       "interface": "4/2",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_4_2"
     },
     {
       "interface": "4/3",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_4_3"
     },
     {
       "interface": "4/4",
+      "shutdown": false,
       "ip_address": null,
       "mask": null,
       "description": "TEST_HW_4_4"
     },
     {
       "interface": "ethernet",
+      "shutdown": false,
       "ip_address": "25.25.18.19",
       "mask": 24,
       "description": null
