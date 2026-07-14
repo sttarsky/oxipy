@@ -7,24 +7,28 @@
   "interfaces": [
     {
       "interface": "bridge.LAN",
+      "shutdown": false,
       "ip_address": "172.16.3.1",
       "mask": 24,
       "description": null
     },
     {
       "interface": "ether1",
+      "shutdown": false,
       "ip_address": "10.38.3.245",
       "mask": 24,
       "description": null
     },
     {
       "interface": "wireguard2",
+      "shutdown": false,
       "ip_address": "10.1.100.2",
       "mask": 24,
       "description": null
     },
     {
       "interface": "ether4",
+      "shutdown": false,
       "ip_address": "100.10.10.1",
       "mask": 24,
       "description": null

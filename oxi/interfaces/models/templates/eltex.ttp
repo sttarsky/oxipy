@@ -25,6 +25,7 @@ Active-image: {{ ignore }} {{ _start_ }}
 
 <group name="interfaces">
 interface {{ interface | ORPHRASE }}
+ shutdown {{ shutdown | set(True) }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
  name {{ description | ORPHRASE}}
  description {{ description | ORPHRASE }}
