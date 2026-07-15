@@ -23,6 +23,7 @@ default_system = {
 interface {{ interface }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
+ shutdown {{ shutdown | set(True) }}
 </group>
 
 <group name="vlans">

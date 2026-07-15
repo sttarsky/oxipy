@@ -63,7 +63,7 @@
     },
     {
       "interface": "HundredGigE1/0/3",
-      "shutdown": false,
+      "shutdown": true,
       "ip_address": null,
       "mask": null,
       "description": "HW_TEST_1"
