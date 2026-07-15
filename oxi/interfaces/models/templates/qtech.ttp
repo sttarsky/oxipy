@@ -29,6 +29,7 @@ default_system = {
 
 <group name="interfaces">
 interface {{ interface | ORPHRASE }}
+ shutdown {{ shutdown | set(True) }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
