@@ -7,7 +7,7 @@
   "interfaces": [
     {
       "interface": "GigaEthernet1/0/9",
-      "shutdown": false,
+      "shutdown": true,
       "ip_address": null,
       "mask": null,
       "description": "FREE"
