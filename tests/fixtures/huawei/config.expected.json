@@ -13,6 +13,13 @@
       "description": null
     },
     {
+      "interface": "GigabitEthernet1/0/43",
+      "shutdown": true,
+      "ip_address": null,
+      "mask": null,
+      "description": "FREE"
+    },
+    {
       "interface": "Vlanif120",
       "shutdown": false,
       "ip_address": "10.26.196.254",
