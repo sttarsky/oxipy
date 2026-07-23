@@ -1,4 +1,5 @@
 import json
+from ipaddress import IPv4Address
 
 import pytest
 
@@ -66,6 +67,10 @@ class TestListModelView:
     def test_dump_uses_aliases(self, interfaces_view):
         dumped = interfaces_view.dump()
         assert dumped[0]["interface"] == "eth0"
+        assert dumped[0]["ip_address"] == IPv4Address("192.168.1.1")
+
+    def test_dump_json(self, interfaces_view):
+        assert interfaces_view.dump_json()
 
     def test_dump_json_keeps_unicode(self):
         view = ModelView([Interfaces(interface="eth0", description="Дом")])
