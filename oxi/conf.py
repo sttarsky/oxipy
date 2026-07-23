@@ -10,6 +10,9 @@ from .interfaces import BaseDevice, device_registry
 if TYPE_CHECKING:
     from requests import Session
 
+    from oxi.interfaces.contract import Interfaces, System, Vlans
+
+
 TModel = TypeVar("TModel", bound=BaseModel)
 
 
@@ -83,13 +86,42 @@ class NodeConfig:
         return self.text
 
     @property
-    def vlans(self):
+    def vlans(self) -> list["Vlans"]:
+        """
+        Returns the list of VLAN configurations for the node.
+
+        :return: List of Vlans associated with the device.
+                vlan_id: int
+                name: str | None = Field(default=None, alias="description")
+        :rtype: list[oxi.interfaces.contract.Vlans]
+        """
+        return ModelView(self._parsed_data.vlans)
         return ModelView(self._parsed_data.vlans)
 
     @property
-    def interfaces(self):
+    def interfaces(self) -> list["Interfaces"]:
+        """
+        Returns the list of Interfaces configurations for the node.
+
+        :return: List of Interfaces associated with the device.
+                    name: str = Field(alias="interface")
+                    ip_address: IPv4Address | None = None
+                    mask: int | None = None
+                    description: str | None = None
+                    shutdown: bool = False
+        :rtype: list[oxi.interfaces.contract.Interfaces]
+        """
         return ModelView(self._parsed_data.interfaces)
 
     @property
-    def system(self):
+    def system(self) -> "System":
+        """
+        Returns the Systems configurations for the node.
+
+        :return: System associated with the device.
+                    model: str
+                    serial_number: str
+                    version: str
+        :rtype: oxi.interfaces.contract.System
+        """
         return ModelView(self._parsed_data.system)
