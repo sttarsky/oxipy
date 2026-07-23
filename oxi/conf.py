@@ -23,7 +23,7 @@ class ModelView(Generic[TModel]):
     def dump_json(self) -> str:
         if isinstance(self._model, list):
             return json.dumps(
-                [item.model_dump(by_alias=True) for item in self._model],
+                [item.model_dump_json(by_alias=True) for item in self._model],
                 ensure_ascii=False,
             )
         return self._model.model_dump_json(by_alias=True)
