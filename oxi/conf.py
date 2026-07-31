@@ -96,7 +96,6 @@ class NodeConfig:
         :rtype: list[oxi.interfaces.contract.Vlans]
         """
         return ModelView(self._parsed_data.vlans)
-        return ModelView(self._parsed_data.vlans)
 
     @property
     def interfaces(self) -> list["Interfaces"]:
