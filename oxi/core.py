@@ -2,6 +2,7 @@ from requests import HTTPError, Session
 
 from oxi.adapter import OxiAdapter
 from oxi.exception import OxiAPIError
+from oxi.interfaces import add_alias as _add_registry_alias
 
 from .node import Node
 
@@ -41,6 +42,22 @@ class OxiAPI:
 
     def close(self):
         return self._session.close()
+
+    @staticmethod
+    def add_alias(alias: str | list[str], model: str) -> None:
+        """Map extra model-name(s) to an already registered device parser.
+
+        The parser registry is process-wide, so aliases added here are
+        visible to every OxiAPI instance.
+
+        Args:
+            alias: New model name or list of names as they appear in Oxidized.
+            model: Existing registry key (case-insensitive), e.g. "huawei".
+
+        Raises:
+            KeyError: if ``model`` is not present in the registry.
+        """
+        _add_registry_alias(alias, model)
 
     def reload(self):
         try:
