@@ -38,7 +38,7 @@ pip install git+https://github.com/sttarsky/oxipy.git
 Install a specific tag or branch:
 
 ```bash
-pip install git+https://github.com/sttarsky/oxipy.git@v0.1.0
+pip install git+https://github.com/sttarsky/oxipy.git
 pip install git+https://github.com/sttarsky/oxipy.git@dev
 ```
 
@@ -64,7 +64,7 @@ print(node.model)
 print(node.full_name)
 
 print(node.config.system.model)
-print(node.config.interfaces.dump_json())
+print(node.config.interfaces.dump())
 print(node.config.vlans.dump_json())
 ```
 
@@ -76,8 +76,8 @@ keenetic
 router/HQ
 Sprinter (KN-3710)
 [
-  {"interface": "Bridge1", "ip_address": "192.168.1.1", "mask": 24, "description": "Guest network"},
-  {"interface": "Bridge0", "ip_address": "172.16.1.1", "mask": 24, "description": "Home network"}
+  {"interface": "Bridge1", "ip_address": "192.168.1.1", "mask": 24, "description": "Guest network", "shutdown": false},
+  {"interface": "Bridge0", "ip_address": "172.16.1.1", "mask": 24, "description": "Home network", "shutdown": false}
 ]
 [
   {"vlan_id": 1, "description": "Home VLAN"},
@@ -136,6 +136,35 @@ Returns a `NodeView` for the requested Oxidized node.
 node = api.node("HQ")
 ```
 
+#### `api.add_alias(alias, model)`
+
+Maps extra model name(s) to an already registered device parser. Use it when
+your Oxidized installation reports a custom `model` value for a device that a
+built-in parser already handles.
+
+```python
+api.add_alias("my-router-os", "mikrotik")
+api.add_alias(["vrp-custom", "hw-campus"], "huawei")
+```
+
+- `alias` is a single name or a list of names as they appear in Oxidized.
+- `model` is an existing registry key (case-insensitive), see
+  [Supported Devices](#supported-devices).
+- Raises `KeyError` if `model` is not registered.
+
+The parser registry is process-wide: aliases added through one `OxiAPI`
+instance are visible to all instances. The method is a `staticmethod`, so it
+can also be called as `OxiAPI.add_alias(...)` before creating a connection.
+
+#### `api.reload()`
+
+Asks Oxidized to reload its node list (`GET /reload`). Returns the HTTP status
+code and raises `OxiAPIError` on failure.
+
+```python
+api.reload()
+```
+
 ### NodeView
 
 `NodeView` represents one network device. It contains metadata returned by
@@ -143,11 +172,18 @@ Oxidized and lazy access to the fetched configuration.
 
 | Property | Type | Description |
 | --- | --- | --- |
+| `name` | `str` | Short node name. |
 | `ip` | `str` | Node IP address. |
 | `full_name` | `str` | Full node name in Oxidized. |
 | `group` | `str` | Oxidized group the node belongs to. |
 | `model` | `str` | Device model key used to select a parser. |
+| `last_status` | `str` | Status of the last Oxidized backup job. |
+| `last_check` | `str` | Start time of the last Oxidized backup job. |
 | `config` | `NodeConfig` | Device configuration, fetched and parsed on first access. |
+
+The `config` object is cached on the node: repeated `node.config` accesses
+reuse the same fetched and parsed configuration and do not hit the network
+again.
 
 Example:
 
@@ -157,7 +193,14 @@ node = api.node("HQ")
 print(node.ip)
 print(node.group)
 print(node.model)
+print(node.last_status)
 ```
+
+#### `node.refresh()`
+
+Asks Oxidized to schedule the node for the next backup run
+(`GET /node/next/<name>`). Returns `"OK"` on success and raises `ValueError`
+on failure.
 
 ### NodeConfig
 
@@ -169,9 +212,9 @@ objects.
 
 | Property | Returns | Description |
 | --- | --- | --- |
-| `system` | `ModelView[System]` | System information. |
-| `interfaces` | `ModelView[list[Interfaces]]` | Parsed interface list. |
-| `vlans` | `ModelView[list[Vlans]]` | Parsed VLAN list, if the template provides VLAN data. |
+| `system` | `ModelView[System]` | System information: `model`, `serial_number`, `version`. |
+| `interfaces` | `ModelView[list[Interfaces]]` | Parsed interfaces: `name`, `ip_address`, `mask`, `description`, `shutdown`. |
+| `vlans` | `ModelView[list[Vlans]]` | Parsed VLANs (`vlan_id`, `name`), if the template provides VLAN data. |
 | `text` | `str` | Raw configuration text fetched from Oxidized. |
 
 Example:
@@ -184,7 +227,7 @@ print(cfg.system.serial_number)
 print(cfg.system.version)
 
 for iface in cfg.interfaces:
-    print(iface.name, iface.ip_address, iface.mask)
+    print(iface.name, iface.ip_address, iface.mask, iface.shutdown)
 
 first_iface = cfg.interfaces[0]
 print(first_iface.name)
@@ -252,6 +295,13 @@ case-insensitively.
 | Eltex | `eltex` |
 | H3C | `h3c` |
 | Quasar | `qos`, `quasar` |
+
+If your Oxidized installation uses a different `model` value for one of these
+devices, map it with [`api.add_alias`](#apiadd_aliasalias-model):
+
+```python
+api.add_alias("my-router-os", "mikrotik")
+```
 
 You can add support for another device family by creating a new device model
 and TTP template. See [Extending Device Models](docs/extending-models.md).
