@@ -1,3 +1,4 @@
+import sys
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -104,11 +105,14 @@ class BaseDevice(ABC):
         return result
 
     def _load_template(self):
-        """Load the device TTP template from models/templates."""
-        path = Path(__file__).parent / "models" / "templates" / self.template
-        if not path.exists():
-            raise FileNotFoundError(f"Template {self.template} not found")
-        return path.read_text(encoding="utf-8")
+        """Load a device TTP template from the module directory or models/templates."""
+        for path in (
+            Path(sys.modules[type(self).__module__].__file__).parent / self.template,
+            Path(__file__).parent / "models" / "templates" / self.template,
+        ):
+            if path.is_file():
+                return path.read_text(encoding="utf-8")
+        raise FileNotFoundError(f"Template {self.template} not found")
 
     def _validate_template_groups(self) -> None:
         """Validate that the template declares all required groups."""
