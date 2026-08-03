@@ -14,7 +14,9 @@ class BaseDevice(ABC):
     _OPTIONAL_SECTIONS: frozenset[str] = frozenset({"vlans"})
 
     def __init__(self, config: str, name: str | None = None):
-        self.config: str = config
+        # Device output may contain CRLF or bare CR (e.g. "! \rActive-image:"),
+        # which breaks line-based TTP matching. Normalize to LF.
+        self.config: str = config.replace("\r\n", "\n").replace("\r", "\n")
         self.name = name
 
         self._loaded_template = self._load_template()

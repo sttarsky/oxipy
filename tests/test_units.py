@@ -59,6 +59,18 @@ class TestTemplateValidation:
             NoTemplate("data")
 
 
+class TestLineEndingNormalization:
+    def test_crlf_and_bare_cr_are_normalized(self):
+        text = load("eltex")
+        lines = text.splitlines(keepends=True)
+        real = ("! \r" + "".join(lines[1:])).replace("\n", "\r\n")
+
+        device = device_registry["eltex"](real)
+
+        assert "system" in device.raw
+        assert device.parse().system.version == "6.6.9.3"
+
+
 class TestNodeNotFound:
     def test_not_found_config_raises_on_parse(self):
         device = device_registry["eltex"](load("eltex", "not_found.conf"), name="HQ")
