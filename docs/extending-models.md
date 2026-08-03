@@ -11,6 +11,9 @@ Device models extend `BaseDevice`. Override `system()`, `interfaces()`, or
 
 - [Data Flow](#data-flow)
 - [Registering a Device](#registering-a-device)
+- [Using Models in Your Own Project](#using-models-in-your-own-project)
+- [Template Resolution](#template-resolution)
+- [Adding Model-Name Aliases](#adding-model-name-aliases)
 - [Method Overrides](#method-overrides)
   - [interfaces()](#interfaces)
   - [vlans()](#vlans)
@@ -56,12 +59,7 @@ def system(self) -> dict:
 
 ## Registering a Device
 
-To add support for a new vendor:
-
-1. Create a Python file in `oxi/interfaces/models/`, for example `cisco.py`.
-2. Create a template in `oxi/interfaces/models/templates/`, for example
-   `cisco.ttp`.
-3. Subclass `BaseDevice` and register it with `@register_parser`.
+A device parser is a `BaseDevice` subclass registered with `@register_parser`:
 
 ```python
 from oxi.interfaces import register_parser
@@ -77,9 +75,72 @@ class CiscoIOS(BaseDevice):
 registry keys used to match the Oxidized node `model` field. Matching is
 case-insensitive.
 
-Model modules are imported automatically through `pkgutil` when
-`oxi.interfaces` is loaded, so you do not need to import your model class
-manually.
+Registering an existing key again replaces the previous parser, so you can
+deliberately override a built-in parser with your own class.
+
+## Using Models in Your Own Project
+
+Subclass `BaseDevice` anywhere in your project, register it, and keep the
+`.ttp` template next to your module:
+
+```text
+myproject/
+├── parsers.py
+└── cisco.ttp
+```
+
+```python
+# myproject/parsers.py
+from oxi.interfaces import register_parser
+from oxi.interfaces.base import BaseDevice
+
+
+@register_parser(["ios", "cisco"])
+class CiscoIOS(BaseDevice):
+    template = "cisco.ttp"  # found next to parsers.py
+```
+
+The decorator writes to the global parser registry when the module is
+imported, so import it before using `OxiAPI`:
+
+```python
+import myproject.parsers  # noqa: F401  (registers CiscoIOS)
+from oxi import OxiAPI
+
+api = OxiAPI(url="https://oxi.example.com")
+```
+
+## Template Resolution
+
+The `template` attribute is resolved in the following order:
+
+1. A file next to the module where the device class is defined. This is the
+   normal case for parsers living in your own project.
+2. The templates directory bundled inside the installed package (used by the
+   built-in models).
+
+An absolute path also works (for example
+`template = str(Path(__file__).with_name("cisco.ttp"))`), because it wins in
+step 1 as-is. If no candidate exists, `FileNotFoundError` is raised.
+
+## Adding Model-Name Aliases
+
+If a built-in parser already handles your device but your Oxidized
+installation reports a different `model` value, map the name with
+`OxiAPI.add_alias` instead of writing a new model:
+
+```python
+from oxi import OxiAPI
+
+OxiAPI.add_alias("my-router-os", "mikrotik")
+OxiAPI.add_alias(["vrp-custom", "hw-campus"], "huawei")
+```
+
+`add_alias(alias, model)` accepts a single alias or a list of aliases. The
+`model` argument must be an already registered key (case-insensitive),
+otherwise `KeyError` is raised with the list of known keys. The registry is
+process-wide, so aliases are visible to every `OxiAPI` instance; add them
+before accessing `node.config`.
 
 ## Method Overrides
 
@@ -224,7 +285,7 @@ Assume a Cisco IOS-like device where:
 - Interface descriptions can contain several words.
 - System fields are present in separate lines.
 
-Template: `oxi/interfaces/models/templates/cisco.ttp`
+Template: `cisco.ttp`, next to your module
 
 ```xml
 <vars>
@@ -253,7 +314,7 @@ vlan {{ vlan_id | _start_ }}
 </group>
 ```
 
-Device model: `oxi/interfaces/models/cisco.py`
+Device model: `parsers.py`
 
 ```python
 from ipaddress import ip_interface
@@ -307,9 +368,13 @@ Methods must return structures accepted by `oxi.interfaces.contract`.
         "ip_address": "192.168.1.1",
         "mask": 24,
         "description": "LAN",
+        "shutdown": False,
     },
 ]
 ```
+
+`shutdown` is optional and defaults to `False` when the template does not
+capture it.
 
 ### `vlans() -> list[dict]`
 

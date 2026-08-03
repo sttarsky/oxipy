@@ -2,7 +2,10 @@
 
 `oxipy` uses [TTP (Template Text Parser)](https://ttp.readthedocs.io/) to turn
 network device configurations fetched from Oxidized into structured data.
-Templates are stored in `oxi/interfaces/models/templates/`.
+A custom device model keeps its `.ttp` template next to the module where the
+class is declared — see
+[Extending Device Models](extending-models.md#template-resolution) for the
+resolution order.
 
 ## Contents
 
@@ -42,8 +45,8 @@ Each template is a `.ttp` file with a small set of conventional blocks:
 </group>
 ```
 
-Use `oxi/interfaces/models/templates/_template.ttp` as the starting point for a
-new parser.
+The skeleton above is the starting point for a new template: copy it into a
+`.ttp` file next to your device model and fill in the groups.
 
 ## Required Groups
 
@@ -113,10 +116,11 @@ The `Interfaces` contract expects these fields:
 
 | Contract field | TTP name / alias | Type | Required |
 | --- | --- | --- | --- |
-| `name` | `interface` | `str` | Yes |
-| `ip_address` | `ip_address` | `IPv4Address | None` | No |
-| `mask` | `mask` | `int | None` | No |
-| `description` | `description` | `str | None` | No |
+| `name` | `interface` | `str` | `Yes` |
+| `ip_address` | `ip_address` | `IPv4Address` | `None` |
+| `mask` | `mask` | `int` | `None` |
+| `description` | `description` | `str` | `None` |
+| `shutdown` | `shutdown` | `bool` | No, defaults to `False` |
 
 The Pydantic field `name` has the alias `interface`, so templates should usually
 emit `interface`. You can also emit `name` because the models allow population
@@ -152,10 +156,26 @@ interface Vlanif120
 interface {{ interface | _start_ }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
+ shutdown {{ shutdown | set(True) }}
 </group>
 ```
 
 Use TTP's `to_cidr` formatter when the device uses dotted decimal masks.
+
+For the `shutdown` field, capture the administrative state in whatever form the
+vendor uses and normalize it to a boolean. Two common patterns from the bundled
+templates:
+
+```xml
+## CLI devices: the presence of a "shutdown" line means disabled
+ shutdown {{ shutdown | set(True) }}
+
+## MikroTik: "disabled=yes" attribute on the line
+add address={{ ip_address | _start_ }}/{{ mask }} disabled={{ shutdown | replace("yes","True") }} interface={{ name }}
+```
+
+When the template does not capture `shutdown`, the contract defaults it to
+`False`.
 
 ## The vlans Group
 
@@ -213,6 +233,7 @@ interface {{ interface | _start_ }}
 | `re("pattern")` | Accepts the value only if it matches the regex. |
 | `ignore` | Captures and discards the value. |
 | `ignore('.*')` | Discards the rest of the line. |
+| `set(True)` | Assigns a fixed value when the line matches, e.g. for `shutdown`. |
 | `to_cidr` | Converts a dotted decimal netmask to a prefix length. |
 | `unrange("-", ",")` | Expands ranges such as `10-12` using a comma separator. |
 | `split(",")` | Splits a captured string into a list. |
@@ -277,6 +298,7 @@ System serial number : {{ serial_number }}
 interface {{ interface | _start_ }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
+ shutdown {{ shutdown | set(True) }}
 </group>
 
 <group name="vlans">

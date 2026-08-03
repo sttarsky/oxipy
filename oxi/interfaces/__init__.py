@@ -21,6 +21,15 @@ def register_parser(
     return wrapper
 
 
+def add_alias(alias: str | list[str], model: str) -> None:
+    cls = device_registry.get(model.lower())
+    if cls is None:
+        raise KeyError(
+            f"Model '{model}' is not registered. Available: {sorted(device_registry)}"
+        )
+    register_parser(alias)(cls)
+
+
 from . import models  # noqa: E402, F401
 
-__all__ = ["register_parser", "device_registry", "BaseDevice"]
+__all__ = ["register_parser", "add_alias", "device_registry", "BaseDevice"]

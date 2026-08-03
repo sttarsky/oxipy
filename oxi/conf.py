@@ -23,7 +23,7 @@ class ModelView(Generic[TModel]):
     def dump_json(self) -> str:
         if isinstance(self._model, list):
             return json.dumps(
-                [item.model_dump_json(by_alias=True) for item in self._model],
+                [item.model_dump(mode="json", by_alias=True) for item in self._model],
                 ensure_ascii=False,
             )
         return self._model.model_dump_json(by_alias=True)
@@ -36,17 +36,17 @@ class ModelView(Generic[TModel]):
     def __iter__(self) -> Iterator[TModel]:
         if isinstance(self._model, list):
             return iter(self._model)
-        raise TypeError("This view wraps a single model, not a list")
+        raise TypeError("This view wraps a list, not a single model")
 
     def __len__(self) -> int:
         if isinstance(self._model, list):
             return len(self._model)
-        raise TypeError("This view wraps a single model, not a list")
+        raise TypeError("This view wraps a list, not a single model")
 
     def __getitem__(self, item):
         if isinstance(self._model, list):
             return self._model[item]
-        raise TypeError("This view wraps a single model, not a list")
+        raise TypeError("This view wraps a list, not a single model")
 
     def __getattr__(self, item):
         return getattr(self._model, item)
@@ -95,7 +95,6 @@ class NodeConfig:
                 name: str | None = Field(default=None, alias="description")
         :rtype: list[oxi.interfaces.contract.Vlans]
         """
-        return ModelView(self._parsed_data.vlans)
         return ModelView(self._parsed_data.vlans)
 
     @property
