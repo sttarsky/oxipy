@@ -17,6 +17,19 @@ default_system = {
 }
 </vars>
 
+<macro>
+def drop_pending_linecards(data):
+    # Everything after this banner is config that failed to apply to absent
+    # linecards. It re-lists interfaces and overwrites the real data, so cut it.
+    marker = "Pending configuration"
+    index = data.find(marker)
+    if index != -1:
+        return data[:index]
+    return data
+</macro>
+
+<input load="text" functions="macro('drop_pending_linecards')"/>
+
 <group name="system" default="default_system">
 ! {{ model | ORPHRASE | _start_ }} Series Software, Version {{ ignore }} Build {{ version | strip(",") }}{{ ignore('.*') }}
 ! Serial num:{{ serial_number | strip(",") }}{{ ignore('.*') }}

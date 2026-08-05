@@ -13,6 +13,13 @@
       "description": "FREE"
     },
     {
+      "interface": "GigaEthernet1/0/10",
+      "shutdown": false,
+      "ip_address": "13.36.8.2",
+      "mask": 24,
+      "description": "test-1003"
+    },
+    {
       "interface": "VLAN1",
       "shutdown": false,
       "ip_address": "192.168.0.1",
