@@ -1,5 +1,7 @@
 from collections.abc import Callable
 
+from oxi.exception import UnknownModelError
+
 from .base import BaseDevice
 
 device_registry = {}
@@ -24,7 +26,7 @@ def register_parser(
 def add_alias(alias: str | list[str], model: str) -> None:
     cls = device_registry.get(model.lower())
     if cls is None:
-        raise KeyError(
+        raise UnknownModelError(
             f"Model '{model}' is not registered. Available: {sorted(device_registry)}"
         )
     register_parser(alias)(cls)

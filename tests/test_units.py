@@ -1,8 +1,17 @@
 import pytest
 from conftest import load
+from pydantic import ValidationError
 
 from oxi import OxiAPI
-from oxi.exception import OxiAPIError
+from oxi.exception import (
+    ConfigNotAvailableError,
+    ConfigParseError,
+    NodeNotFoundError,
+    OxiConnectionError,
+    OxiError,
+    TemplateError,
+    UnknownModelError,
+)
 from oxi.interfaces import device_registry
 from oxi.interfaces.base import BaseDevice
 from oxi.interfaces.models.huawei import Huawei
@@ -48,14 +57,14 @@ class TestTemplateValidation:
             def _load_template(self):
                 return '<group name="system"></group>'
 
-        with pytest.raises(ValueError, match="missing required groups"):
+        with pytest.raises(TemplateError, match="missing required groups"):
             OnlySystem("data")
 
     def test_missing_template_file_raises(self):
         class NoTemplate(BaseDevice):
             template = "does_not_exist.ttp"
 
-        with pytest.raises(FileNotFoundError):
+        with pytest.raises(TemplateError):
             NoTemplate("data")
 
 
@@ -71,13 +80,39 @@ class TestLineEndingNormalization:
         assert device.parse().system.version == "6.6.9.3"
 
 
-class TestNodeNotFound:
+class TestConfigNotAvailable:
     def test_not_found_config_raises_on_parse(self):
         device = device_registry["eltex"](load("eltex", "not_found.conf"), name="HQ")
         assert device.raw is None
-        with pytest.raises(OxiAPIError) as exc:
+        with pytest.raises(ConfigNotAvailableError):
             device.parse()
-        assert exc.value.status_code == 404
+
+
+class TestConfigParseError:
+    def test_pydantic_validation_is_wrapped(self):
+        device = device_registry["keenetic"](load("keenetic"))
+        # System requires model/serial_number/version; feeding an empty dict
+        # makes pydantic raise, which parse() must surface as ConfigParseError.
+        device.system = lambda: {}
+        with pytest.raises(ConfigParseError) as exc:
+            device.parse()
+        assert isinstance(exc.value.__cause__, ValidationError)
+
+
+class TestErrorHierarchy:
+    @pytest.mark.parametrize(
+        "exc_cls",
+        [
+            OxiConnectionError,
+            NodeNotFoundError,
+            ConfigNotAvailableError,
+            ConfigParseError,
+            UnknownModelError,
+            TemplateError,
+        ],
+    )
+    def test_all_errors_subclass_oxierror(self, exc_cls):
+        assert issubclass(exc_cls, OxiError)
 
 
 @pytest.fixture
@@ -95,7 +130,7 @@ class TestAddAlias:
         assert device_registry["my-vrp"] is not Mikrotik
 
     def test_unknown_model_raises(self, clean_registry):
-        with pytest.raises(KeyError, match="not registered"):
+        with pytest.raises(UnknownModelError, match="not registered"):
             OxiAPI.add_alias("x", "no-such-vendor")
         assert "x" not in device_registry
 

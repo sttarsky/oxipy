@@ -1,7 +1,7 @@
 from requests import HTTPError, Session
 
 from oxi.adapter import OxiAdapter
-from oxi.exception import OxiAPIError
+from oxi.exception import error_from_http
 from oxi.interfaces import add_alias as _add_registry_alias
 
 from .node import Node
@@ -55,7 +55,7 @@ class OxiAPI:
             model: Existing registry key (case-insensitive), e.g. "huawei".
 
         Raises:
-            KeyError: if ``model`` is not present in the registry.
+            UnknownModelError: if ``model`` is not present in the registry.
         """
         _add_registry_alias(alias, model)
 
@@ -64,5 +64,5 @@ class OxiAPI:
             reload_response = self._session.get(f"{self.base_url}/reload")
             reload_response.raise_for_status()
         except HTTPError as e:
-            raise OxiAPIError.from_http_error(e, context="Reload Oxidized") from e
+            raise error_from_http(e, context="Reload Oxidized") from e
         return reload_response.status_code

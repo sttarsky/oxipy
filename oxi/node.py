@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from requests import HTTPError
 
-from oxi.exception import OxiAPIError
+from oxi.exception import error_from_http
 
 from .view import NodeView
 
@@ -23,7 +23,7 @@ class Node:
             response = self._session.get(url)
             response.raise_for_status()
         except HTTPError as e:
-            raise OxiAPIError.from_http_error(e, context=f"Node {name}") from e
+            raise error_from_http(e, context=f"Node {name}") from e
         return NodeView(
             session=self._session, base_url=self._base_url, data=response.json()
         )

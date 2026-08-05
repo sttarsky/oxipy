@@ -17,6 +17,7 @@ configuration sections such as system data, interfaces, and VLANs.
   - [NodeView](#nodeview)
   - [NodeConfig](#nodeconfig)
   - [ModelView](#modelview)
+- [Error Handling](#error-handling)
 - [Supported Devices](#supported-devices)
 - [Additional Documentation](#additional-documentation)
 
@@ -150,7 +151,7 @@ api.add_alias(["vrp-custom", "hw-campus"], "huawei")
 - `alias` is a single name or a list of names as they appear in Oxidized.
 - `model` is an existing registry key (case-insensitive), see
   [Supported Devices](#supported-devices).
-- Raises `KeyError` if `model` is not registered.
+- Raises `UnknownModelError` if `model` is not registered.
 
 The parser registry is process-wide: aliases added through one `OxiAPI`
 instance are visible to all instances. The method is a `staticmethod`, so it
@@ -159,7 +160,7 @@ can also be called as `OxiAPI.add_alias(...)` before creating a connection.
 #### `api.reload()`
 
 Asks Oxidized to reload its node list (`GET /reload`). Returns the HTTP status
-code and raises `OxiAPIError` on failure.
+code and raises `OxiConnectionError` on failure.
 
 ```python
 api.reload()
@@ -280,6 +281,77 @@ print(interfaces[0])
 print(interfaces[:3])
 print(interfaces.dump())
 ```
+
+## Error Handling
+
+All exceptions raised by `oxipy` derive from a single base class, `OxiError`.
+Catch `OxiError` to handle any library-specific failure in one place, or catch a
+specific subclass when you need to react differently. Every exception is
+importable from the top-level `oxi` package.
+
+```text
+OxiError                     # base class for every oxipy error
+├── OxiConnectionError       # real transport/HTTP failure (has .status_code)
+├── NodeNotFoundError        # the node does not exist in Oxidized
+├── ConfigNotAvailableError  # the node exists, but there is no config to parse
+├── ConfigParseError         # a config was fetched but could not be parsed
+├── UnknownModelError        # the device model is not in the parser registry
+└── TemplateError            # the TTP template is missing or invalid
+```
+
+| Exception | Raised when | Typical cause |
+| --- | --- | --- |
+| `OxiConnectionError` | A request fails with a genuine server/transport error. | 5xx, `401/403`, timeouts. `.status_code` holds the HTTP status. |
+| `NodeNotFoundError` | The requested node does not exist. | `GET /node/show/<name>` returns a real `404`, or Oxidized's `500` page titled `Oxidized::NodeNotFound`. |
+| `ConfigNotAvailableError` | The node exists, but Oxidized returned no configuration. | `GET /node/fetch/<name>` responds `200` with the body `node not found` (no backup yet). |
+| `ConfigParseError` | A config was fetched but could not be turned into a model. | The TTP template produced no required sections, or parsed data failed Pydantic validation (original error kept in `__cause__`). |
+| `UnknownModelError` | The device model has no registered parser. | The node `model` value (or an `add_alias` target) is not in the registry. |
+| `TemplateError` | The TTP template cannot be loaded or is structurally invalid. | The template file is missing, or it does not declare the required groups. |
+
+### Why "not found" is split into three exceptions
+
+Oxidized signals a missing node inconsistently, so `oxipy` normalizes it into
+distinct, meaningful exceptions:
+
+- The node is not registered at all -> `NodeNotFoundError`.
+- The node is registered but has no stored backup yet -> `ConfigNotAvailableError`.
+- The backup exists but the parser cannot process it -> `ConfigParseError`.
+
+This lets you tell "no such device" apart from "device exists but has no data"
+without inspecting HTTP status codes.
+
+### Example
+
+```python
+from oxi import (
+    OxiAPI,
+    OxiError,
+    NodeNotFoundError,
+    ConfigNotAvailableError,
+    ConfigParseError,
+    OxiConnectionError,
+)
+
+api = OxiAPI(url="https://oxi.example.com")
+
+try:
+    config = api.node("HQ").config
+    print(config.system.model)
+except NodeNotFoundError:
+    print("No such node in Oxidized")
+except ConfigNotAvailableError:
+    print("Node exists, but has no backup yet")
+except ConfigParseError as exc:
+    # The underlying parser/validation error is preserved on __cause__.
+    print(f"Could not parse config: {exc.__cause__}")
+except OxiConnectionError as exc:
+    print(f"Oxidized request failed (HTTP {exc.status_code})")
+except OxiError:
+    print("Some other oxipy error")
+```
+
+`OxiConnectionError` is the only exception that carries an HTTP `status_code`;
+the others describe domain conditions and do not expose one.
 
 ## Supported Devices
 
