@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from pydantic import BaseModel
 
+from .exception import UnknownModelError
 from .interfaces import BaseDevice, device_registry
 
 if TYPE_CHECKING:
@@ -63,7 +64,9 @@ class NodeConfig:
         self._url = f"{base_url}/node/fetch/{full_name}"
         self._device: type[BaseDevice] = device_registry.get(self._model.lower())
         if self._device is None:
-            raise ValueError(f"Device model '{self._model}' not found in registry")
+            raise UnknownModelError(
+                f"Device model '{self._model}' not found in registry"
+            )
         self._parsed_data = self._device(self.text, name=self._full_name).parse()
 
     @cached_property

@@ -3,7 +3,7 @@ import responses
 from conftest import load
 
 from oxi import OxiAPI
-from oxi.exception import OxiAPIError
+from oxi.exception import NodeNotFoundError, UnknownModelError
 
 BASE = "https://oxi.example.com"
 
@@ -42,18 +42,16 @@ def test_node_config_fetches_and_parses():
 
 
 @responses.activate
-def test_node_not_found_maps_to_404():
+def test_real_404_maps_to_node_not_found():
     responses.get(f"{BASE}/node/show/missing.json", status=404)
 
     api = OxiAPI(url=BASE)
-    with pytest.raises(OxiAPIError) as exc:
+    with pytest.raises(NodeNotFoundError):
         api.node("missing")
-
-    assert exc.value.status_code == 404
 
 
 @responses.activate
-def test_500_with_node_not_found_html_maps_to_404():
+def test_500_with_node_not_found_html_maps_to_node_not_found():
     responses.get(
         f"{BASE}/node/show/ghost.json",
         status=500,
@@ -62,10 +60,8 @@ def test_500_with_node_not_found_html_maps_to_404():
     )
 
     api = OxiAPI(url=BASE)
-    with pytest.raises(OxiAPIError) as exc:
+    with pytest.raises(NodeNotFoundError):
         api.node("ghost")
-
-    assert exc.value.status_code == 404
 
 
 @responses.activate
@@ -77,11 +73,11 @@ def test_reload_returns_status_code():
 
 
 @responses.activate
-def test_unknown_model_raises_value_error():
+def test_unknown_model_raises_unknown_model_error():
     data = {**NODE_DATA, "model": "unknown_vendor"}
     responses.get(f"{BASE}/node/show/HQ.json", json=data)
     responses.get(f"{BASE}/node/fetch/grp/HQ", body="whatever")
 
     api = OxiAPI(url=BASE)
-    with pytest.raises(ValueError, match="not found in registry"):
+    with pytest.raises(UnknownModelError, match="not found in registry"):
         _ = api.node("HQ").config

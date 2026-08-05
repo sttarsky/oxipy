@@ -3,9 +3,14 @@ import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from pydantic import ValidationError
 from ttp import ttp
 
-from oxi.exception import OxiAPIError
+from oxi.exception import (
+    ConfigNotAvailableError,
+    ConfigParseError,
+    TemplateError,
+)
 from oxi.interfaces.contract import Device, Interfaces, System, Vlans
 
 
@@ -86,8 +91,12 @@ class BaseDevice(ABC):
 
     def _validate_contract(self) -> dict:
         if self.raw is None:
-            msg = f"Node {self.name} not found" if self.name else "Node not found"
-            raise OxiAPIError(msg, status_code=404)
+            msg = (
+                f"No config found for device {self.name}"
+                if self.name
+                else "No config found"
+            )
+            raise ConfigNotAvailableError(msg)
         system_data = self.system()
         interfaces_data = self._as_list(self.interfaces())
         result = {
@@ -98,7 +107,7 @@ class BaseDevice(ABC):
 
         if "vlans" in self._declared_sections:
             if "vlans" not in self.raw:
-                raise ValueError(
+                raise ConfigParseError(
                     f"{self.__class__.__name__}: template '{self.template}' "
                     f"declares optional group 'vlans', but TTP did not return it."
                 )
@@ -114,7 +123,7 @@ class BaseDevice(ABC):
         ):
             if path.is_file():
                 return path.read_text(encoding="utf-8")
-        raise FileNotFoundError(f"Template {self.template} not found")
+        raise TemplateError(f"Template {self.template} not found")
 
     def _validate_template_groups(self) -> None:
         """Validate that the template declares all required groups."""
@@ -128,7 +137,7 @@ class BaseDevice(ABC):
 
         missing_required = self._REQUIRED_SECTIONS - declared
         if missing_required:
-            raise ValueError(
+            raise TemplateError(
                 f"{self.__class__.__name__}: template '{self.template}' "
                 f"missing required groups: {sorted(missing_required)}. "
                 f"Declared groups: {sorted(declared)}"
@@ -141,14 +150,13 @@ class BaseDevice(ABC):
         parser.parse()
         res = parser.result()
         if res[0][0]:
-            # raise OxiAPIError(f"Node {self.name} not found", status_code=404)
             return None
         p = ttp(data=self.config, template=self._loaded_template)
         p.parse()
         raw: dict = p.result()[0][0]
         missing = self._REQUIRED_SECTIONS - raw.keys()
         if missing:
-            raise ValueError(
+            raise ConfigParseError(
                 f"{self.__class__.__name__}: TTP template '{self.template}' "
                 f"did not produce required groups: {sorted(missing)}. "
                 f"Return only: {(raw.keys())}"
@@ -156,4 +164,10 @@ class BaseDevice(ABC):
         return raw
 
     def parse(self) -> Device:
-        return Device(**self._validate_contract())
+        try:
+            return Device(**self._validate_contract())
+        except ValidationError as e:
+            raise ConfigParseError(
+                f"{type(self).__name__}: fetched config did not match "
+                f"the expected schema"
+            ) from e
