@@ -1,6 +1,10 @@
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from requests import RequestException
+
+from oxi.exception import error_from_http
+
 from .conf import NodeConfig
 
 if TYPE_CHECKING:
@@ -14,9 +18,12 @@ class NodeView:
         self._data = data
 
     def _updater(self) -> int:
-        response = self._session.get(f"{self._base_url}/node/next/{self.full_name}")
-        response.raise_for_status()
-        return response.status_code
+        try:
+            response = self._session.get(f"{self._base_url}/node/next/{self.full_name}")
+            response.raise_for_status()
+            return response.status_code
+        except RequestException as e:
+            raise error_from_http(e, context=f"Node {self.full_name}") from e
 
     @property
     def name(self) -> str:

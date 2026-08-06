@@ -11,7 +11,12 @@ class OxiAdapter(HTTPAdapter):
         **kwargs,
     ):
         self.timeout = timeout
-        retry = Retry(total=max_retries, backoff_factor=0.3)
+        retry = Retry(
+            total=max_retries,
+            backoff_factor=0.3,
+            status_forcelist=(429, 502, 503, 504),
+            raise_on_status=False,
+        )
         super().__init__(*args, max_retries=retry, **kwargs)
 
     def send(self, request, **kwargs):

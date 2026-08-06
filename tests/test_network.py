@@ -1,9 +1,14 @@
 import pytest
+import requests
 import responses
 from conftest import load
 
 from oxi import OxiAPI
-from oxi.exception import NodeNotFoundError, UnknownModelError
+from oxi.exception import (
+    NodeNotFoundError,
+    OxiConnectionError,
+    UnknownModelError,
+)
 
 BASE = "https://oxi.example.com"
 
@@ -70,6 +75,72 @@ def test_reload_returns_status_code():
 
     api = OxiAPI(url=BASE)
     assert api.reload() == 200
+
+
+@responses.activate
+def test_fetch_401_maps_to_connection_error():
+    responses.get(f"{BASE}/node/show/HQ.json", json=NODE_DATA)
+    responses.get(f"{BASE}/node/fetch/grp/HQ", status=401)
+
+    api = OxiAPI(url=BASE)
+    with pytest.raises(OxiConnectionError) as exc:
+        _ = api.node("HQ").config
+
+    assert exc.value.status_code == 401
+
+
+@responses.activate
+def test_fetch_502_maps_to_connection_error():
+    responses.get(f"{BASE}/node/show/HQ.json", json=NODE_DATA)
+    responses.get(f"{BASE}/node/fetch/grp/HQ", status=502)
+
+    api = OxiAPI(url=BASE)
+    with pytest.raises(OxiConnectionError) as exc:
+        _ = api.node("HQ").config
+
+    assert exc.value.status_code == 502
+
+
+@responses.activate
+def test_refresh_401_maps_to_connection_error():
+    responses.get(f"{BASE}/node/show/HQ.json", json=NODE_DATA)
+    responses.get(f"{BASE}/node/next/grp/HQ", status=401)
+
+    api = OxiAPI(url=BASE)
+    node = api.node("HQ")
+    with pytest.raises(OxiConnectionError) as exc:
+        node.refresh()
+
+    assert exc.value.status_code == 401
+
+
+@responses.activate
+def test_connection_error_maps_to_connection_error():
+    responses.get(
+        f"{BASE}/node/show/HQ.json",
+        body=requests.exceptions.ConnectionError("connection refused"),
+    )
+
+    api = OxiAPI(url=BASE)
+    with pytest.raises(OxiConnectionError) as exc:
+        api.node("HQ")
+
+    assert exc.value.status_code is None
+
+
+@responses.activate
+def test_timeout_on_fetch_maps_to_connection_error():
+    responses.get(f"{BASE}/node/show/HQ.json", json=NODE_DATA)
+    responses.get(
+        f"{BASE}/node/fetch/grp/HQ",
+        body=requests.exceptions.ReadTimeout("timed out"),
+    )
+
+    api = OxiAPI(url=BASE)
+    with pytest.raises(OxiConnectionError) as exc:
+        _ = api.node("HQ").config
+
+    assert exc.value.status_code is None
 
 
 @responses.activate
