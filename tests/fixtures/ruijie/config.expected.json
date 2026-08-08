@@ -1,0 +1,51 @@
+{
+    "system": {
+      "model": "S6250-48XS8CQ",
+      "serial_number": "G1R51CG666666",
+      "version": "11.0(5)B9P108"
+    },
+    "interfaces": [
+        {
+            "interface": "TenGigabitEthernet 1/0/35",
+            "shutdown": true,
+            "ip_address": null,
+            "mask": null,
+            "description": "Rezerv test | port 1/0/30"
+        },
+        {
+            "interface": "TenGigabitEthernet 1/0/36",
+            "shutdown": true,
+            "ip_address": null,
+            "mask": null,
+            "description": "Rezerv test,view/sync | port 1/0/31"
+        },
+        {
+            "interface": "AggregatePort 66",
+            "shutdown": false,
+            "ip_address": null,
+            "mask": null,
+            "description": "Rezerv test_aggregate | bond 1"
+        },
+        {
+            "interface": "VLAN 356",
+            "shutdown": false,
+            "ip_address": "192.168.16.254",
+            "mask": "255.255.255.0",
+            "description": "MGMT"
+        },
+        {
+            "interface": "VLAN 666",
+            "shutdown": true,
+            "ip_address": "1.1.1.1",
+            "mask": "255.255.255.0",
+            "description": "test"
+        },
+        {
+            "interface": "Mgmt 0",
+            "shutdown": false,
+            "ip_address": null,
+            "mask": null,
+            "description": "OoB"
+        }
+    ]
+}
