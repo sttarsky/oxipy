@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from requests import RequestException
 
-from oxi.exception import error_from_http
+from oxi.exception import OxiConnectionError, error_from_http
 
 from .conf import NodeConfig
 
@@ -58,7 +58,9 @@ class NodeView:
     def refresh(self) -> str:
         result = self._updater()
         if result != 200:
-            raise ValueError(f"Failed to refresh node {self.full_name}")
+            raise OxiConnectionError(
+                f"Failed to refresh node {self.full_name}", status_code=502
+            )
         return "OK"
 
     @cached_property

@@ -106,8 +106,8 @@ OxiAPI(
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `url` | `str` | Base URL of the Oxidized API, for example `https://oxi.example.com`. |
-| `username` | `str | None` | Optional username for HTTP basic authentication. |
-| `password` | `str | None` | Optional password for HTTP basic authentication. |
+| `username` | `str` | `None` | Optional username for HTTP basic authentication. |
+| `password` | `str` | `None` | Optional password for HTTP basic authentication. |
 | `verify` | `bool` | Whether to verify TLS certificates. Defaults to `True`. |
 
 Example:
@@ -261,7 +261,7 @@ to model attributes.
 
 `__iter__`, `__len__`, and `__getitem__` are available only for list-backed
 sections such as `interfaces` and `vlans`. Calling them on `system` raises
-`TypeError`.
+`OxiConnectionError`.
 
 Examples:
 
