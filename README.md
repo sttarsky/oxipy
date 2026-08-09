@@ -23,8 +23,9 @@ configuration sections such as system data, interfaces, and VLANs.
 
 ## Installation
 
-The package is distributed from the source repository. It is not published to
-PyPI yet.
+```bash
+pip install oxipy
+```
 
 **Requirements:** Python 3.10+
 
@@ -106,8 +107,8 @@ OxiAPI(
 | Parameter | Type | Description |
 | --- | --- | --- |
 | `url` | `str` | Base URL of the Oxidized API, for example `https://oxi.example.com`. |
-| `username` | `str | None` | Optional username for HTTP basic authentication. |
-| `password` | `str | None` | Optional password for HTTP basic authentication. |
+| `username` | `str` | `None` | Optional username for HTTP basic authentication. |
+| `password` | `str` | `None` | Optional password for HTTP basic authentication. |
 | `verify` | `bool` | Whether to verify TLS certificates. Defaults to `True`. |
 
 Example:
@@ -261,7 +262,7 @@ to model attributes.
 
 `__iter__`, `__len__`, and `__getitem__` are available only for list-backed
 sections such as `interfaces` and `vlans`. Calling them on `system` raises
-`TypeError`.
+`OxiConnectionError`.
 
 Examples:
 
@@ -367,6 +368,8 @@ case-insensitively.
 | Eltex | `eltex` |
 | H3C | `h3c` |
 | Quasar | `qos`, `quasar` |
+| Ruijie Networks | `ruijie networks`, `ruijie`, `rgos` |
+| Orion Networks | `orion`, `orion networks` , `orion os`, `oos`|
 
 If your Oxidized installation uses a different `model` value for one of these
 devices, map it with [`api.add_alias`](#apiadd_aliasalias-model):

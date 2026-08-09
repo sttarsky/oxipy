@@ -36,6 +36,10 @@
   ],
   "vlans": [
     {
+      "vlan_id": 772,
+      "description": "test"
+    },
+    {
       "vlan_id": 1,
       "description": null
     },
@@ -157,10 +161,6 @@
     },
     {
       "vlan_id": 205,
-      "description": null
-    },
-    {
-      "vlan_id": 772,
       "description": null
     },
     {

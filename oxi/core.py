@@ -1,4 +1,4 @@
-from requests import HTTPError, Session
+from requests import RequestException, Session
 
 from oxi.adapter import OxiAdapter
 from oxi.exception import error_from_http
@@ -63,6 +63,6 @@ class OxiAPI:
         try:
             reload_response = self._session.get(f"{self.base_url}/reload")
             reload_response.raise_for_status()
-        except HTTPError as e:
+        except RequestException as e:
             raise error_from_http(e, context="Reload Oxidized") from e
         return reload_response.status_code

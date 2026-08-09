@@ -1,0 +1,64 @@
+{
+    "system": {
+        "model": "Orion Beta B26Q Device",
+        "serial_number": "G1RL60CCC2155",
+        "version": "12.4(1)B0101P1S5"
+    },
+    "interfaces": [
+        {
+            "interface": "AggregatePort 1",
+            "description": "test",
+            "ip_address": null,
+            "mask": null,
+            "shutdown": false
+        },
+        {
+            "interface": "VLAN 12",
+            "description": "MGMT",
+            "ip_address": "172.16.1.1",
+            "mask": 24,
+            "shutdown": false
+        },
+        {
+            "interface": "VLAN 374",
+            "description": "DATA-2",
+            "ip_address": "172.16.2.1",
+            "mask": 24,
+            "shutdown": false
+        }
+    ],
+    "vlans": [
+        {
+            "vlan_id": 1,
+            "description": null
+        },
+        {
+            "vlan_id": 12,
+            "description": null
+        },
+        {
+            "vlan_id": 374,
+            "description": null
+        },
+        {
+            "vlan_id": 3376,
+            "description": null
+        },
+        {
+            "vlan_id": 3377,
+            "description": null
+        },
+        {
+            "vlan_id": 3378,
+            "description": null
+        },
+        {
+            "vlan_id": 3379,
+            "description": null
+        },
+        {
+            "vlan_id": 666,
+            "description": "DATA-3"
+        }
+    ]
+}

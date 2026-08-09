@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from requests import HTTPError
+from requests import RequestException
 
 from oxi.exception import error_from_http
 
@@ -22,7 +22,7 @@ class Node:
                 url += ".json"
             response = self._session.get(url)
             response.raise_for_status()
-        except HTTPError as e:
+        except RequestException as e:
             raise error_from_http(e, context=f"Node {name}") from e
         return NodeView(
             session=self._session, base_url=self._base_url, data=response.json()

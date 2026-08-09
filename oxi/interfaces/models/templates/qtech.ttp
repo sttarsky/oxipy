@@ -40,14 +40,14 @@ def drop_pending_linecards(data):
 ! System serial number : {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 interface {{ interface | ORPHRASE }}
  shutdown {{ shutdown | set(True) }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
 
-<group name="vlans">
+<group name="vlans*">
 vlan {{ vlan_ids | contains(",", "-") | unrange("-", ",") }}
 ,{{ vlan_tail | unrange("-", ",") }}
 vlan {{ vlan_id | _start_ }}

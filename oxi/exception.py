@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from requests import HTTPError
+    from requests import RequestException
 
 _STATUS_MESSAGES: dict[int, str] = {
     401: "Unauthorized",
@@ -73,7 +73,7 @@ class TemplateError(OxiError):
     """The TTP template is missing or structurally invalid."""
 
 
-def _looks_like_node_not_found_html(e: "HTTPError") -> bool:
+def _looks_like_node_not_found_html(e: "RequestException") -> bool:
     resp = getattr(e, "response", None)
     if resp is None:
         return False
@@ -94,12 +94,14 @@ def _looks_like_node_not_found_html(e: "HTTPError") -> bool:
     )
 
 
-def error_from_http(e: "HTTPError", context: str = "") -> OxiError:
-    """Translate a ``requests.HTTPError`` into the right oxipy exception.
+def error_from_http(e: "RequestException", context: str = "") -> OxiError:
+    """Translate a ``requests.RequestException`` into the right oxipy exception.
 
     A missing node (real 404 or Oxidized's 500 + ``NodeNotFound`` HTML page) is
-    reported as :class:`NodeNotFoundError`; anything else becomes an
-    :class:`OxiConnectionError` carrying the HTTP status code.
+    reported as :class:`NodeNotFoundError`. Everything else - HTTP errors as well
+    as transport failures (connection refused, timeout, TLS) that carry no
+    response - becomes an :class:`OxiConnectionError`; ``status_code`` is set
+    when an HTTP status is available and ``None`` for transport failures.
     """
     resp = getattr(e, "response", None)
     status = resp.status_code if resp is not None else None
@@ -111,7 +113,11 @@ def error_from_http(e: "HTTPError", context: str = "") -> OxiError:
     base = (
         (_STATUS_MESSAGES.get(status) if status is not None else None)
         or (resp.reason if resp is not None else None)
-        or (f"HTTP {status}" if status is not None else "Request failed")
+        or (
+            f"HTTP {status}"
+            if status is not None
+            else f"request failed ({type(e).__name__})"
+        )
     )
     message = f"{context}: {base}" if context else base
     return OxiConnectionError(message, status)

@@ -4,8 +4,9 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from pydantic import BaseModel
+from requests import RequestException
 
-from .exception import UnknownModelError
+from .exception import UnknownModelError, error_from_http
 from .interfaces import BaseDevice, device_registry
 
 if TYPE_CHECKING:
@@ -71,8 +72,11 @@ class NodeConfig:
 
     @cached_property
     def _response(self):
-        response = self._session.get(self._url)
-        response.raise_for_status()
+        try:
+            response = self._session.get(self._url)
+            response.raise_for_status()
+        except RequestException as e:
+            raise error_from_http(e, context=f"Node {self._full_name}") from e
         return response
 
     @property

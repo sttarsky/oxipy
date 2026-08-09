@@ -26,7 +26,7 @@ default_system = {
 # Product Serial Number {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 {{ ignore("\\s*") }}config {{ interface }} ipv4 address {{ ip_address }}/{{ mask }} gateway {{ gateway }} {{ ignore }}
 </group>
 
