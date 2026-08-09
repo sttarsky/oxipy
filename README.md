@@ -23,8 +23,9 @@ configuration sections such as system data, interfaces, and VLANs.
 
 ## Installation
 
-The package is distributed from the source repository. It is not published to
-PyPI yet.
+```bash
+pip install oxipy
+```
 
 **Requirements:** Python 3.10+
 
