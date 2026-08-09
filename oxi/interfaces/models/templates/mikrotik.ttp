@@ -21,7 +21,7 @@ default_vlans = {
 # serial number = {{ serial_number }}
 </group>
 
-<group name="interfaces" default="default_interfaces">
+<group name="interfaces*" default="default_interfaces">
 /ip address
 ## not disabled and no comment
 add address={{ ip_address | _start_ }}/{{ mask }} interface={{ name }} network={{ network }}
@@ -33,7 +33,7 @@ add address={{ ip_address | _start_ }}/{{ mask }} disabled={{ shutdown | replace
 add address={{ ip_address | _start_ }}/{{ mask }} comment={{ description | ORPHRASE | exclude("disabled=") | strip('"') }} disabled={{ shutdown | replace("yes","True") | strip('"')}} interface={{ name }} network={{ network }}
 </group>
 
-<group name="vlans">
+<group name="vlans*">
 /interface vlan
 ## not disabled and no comment
 add interface={{ interface | _start_ }} name={{ name | ORPHRASE | strip('"') }} vlan-id={{ vlan_id }}

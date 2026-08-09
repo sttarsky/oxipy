@@ -6,7 +6,6 @@ class Quasar(BaseDevice):
     template = "quasar.ttp"
 
     def interfaces(self) -> list[dict]:
-        ether_interface: dict = self.raw.get("interfaces", {})
         interfaces: list[dict] = []
         bulk_interfaces: dict = self.raw.get("bulkinterfaces", {})
         for key, value in bulk_interfaces.items():
@@ -18,6 +17,5 @@ class Quasar(BaseDevice):
                     "mask": value.get("mask"),
                 }
             )
-        if ether_interface:
-            interfaces.append(ether_interface)
+        interfaces.extend(self.raw.get("interfaces"))
         return interfaces

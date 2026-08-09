@@ -25,13 +25,20 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
-    ...
+! System description      : {{ description | ORPHRASE }}({{ model }}) By {{ vendor | ORPHRASE }}
+! System software version : {{ _ignore_}} {{ version | ORPHRASE }}
+! System serial number    : {{ serial_number }}
 </group>
 
-<group name="interfaces">
-    ...
+<group name="interfaces*">
+interface {{ interface | ORPHRASE }}
+ description {{ description | ORPHRASE }}
+ shutdown {{ shutdown | set(True) }}
+ ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
 
-<group name="vlans">
-    ...
+<group name="vlans*">
+vlan {{ vlan_id }}
+ name {{ name | ORPHRASE }}
+vlan range {{ vlan_ids | contains(",", "-") | unrange("-", ",") | split(",") | _start_ }}
 </group>

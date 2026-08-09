@@ -11,6 +11,12 @@ mask, description. Use a prefix length for mask; convert dotted decimal masks
 with `to_cidr` or in the device class.
 vlans must return dictionaries with vlan_id and optional name/description.
 
+List-style groups (interfaces, vlans) MUST use the `*` path formatter in the
+group name (e.g. name="interfaces*"). It forces TTP to always emit a list,
+even for a single match, instead of collapsing one match into a dict. The `*`
+is stripped from the result key, so downstream code still reads raw["vlans"].
+Keep the single-object `system` group without the suffix.
+
 Useful TTP modifiers: ORPHRASE, _start_, strip(), replace(), exclude(),
 ignore, ignore('.*'), to_cidr, unrange(), split().
 
@@ -28,10 +34,10 @@ default_system = {
     ...
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
     ...
 </group>
 
-<group name="vlans">
+<group name="vlans*">
     ...
 </group>

@@ -131,8 +131,9 @@ class BaseDevice(ABC):
             root = ET.fromstring(self._loaded_template)
         except ET.ParseError:
             root = ET.fromstring(f"<template>{self._loaded_template}</template>")
-
-        declared = {g.get("name") for g in root.iter("group") if g.get("name")}
+        declared = {
+            g.get("name").rstrip("*") for g in root.iter("group") if g.get("name")
+        }
         self._declared_sections = declared
 
         missing_required = self._REQUIRED_SECTIONS - declared

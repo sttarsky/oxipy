@@ -18,12 +18,12 @@ default_system = {
 # ESN of slot {{ slot_number }}: {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 interface {{ interface }}
  description {{ description | ORPHRASE }}
  shutdown {{ shutdown | set(True) }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
 </group>
-<group name="vlans">
+<group name="vlans*">
 vlan batch {{ vlan_ids | ORPHRASE | unrange(" to ", " ") | split(" ")}}
 </group>

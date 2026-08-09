@@ -14,7 +14,7 @@ default_interfaces = {}
 ! hw_version: {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 interface {{ name | _start_ | exclude("Vlan") }}
     rename {{ rename }}
     description {{ description | ORPHRASE | strip('"') }}
@@ -23,7 +23,7 @@ interface {{ name | _start_ | exclude("Vlan") }}
     {{ shutdown | re("down") | replace("down","True") | strip('"') }}
 </group>
 
-<group name="vlans">
+<group name="vlans*">
 interface {{ ignore }}/Vlan{{ vlan_id }}
     description {{ description | ORPHRASE | strip('"') }}
 </group>

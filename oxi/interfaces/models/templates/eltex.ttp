@@ -23,7 +23,7 @@ Active-image: {{ ignore }} {{ _start_ }}
 !  {{ unit | exclude("-") }} {{ mac_address }} {{ hardware_version }} {{ serial_number }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 interface {{ interface | ORPHRASE }}
  shutdown {{ shutdown | set(True) }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
@@ -31,7 +31,7 @@ interface {{ interface | ORPHRASE }}
  description {{ description | ORPHRASE }}
 </group>
 
-<group name="vlans">
+<group name="vlans*">
 interface vlan {{ vlan_id | _start_ }}
  name {{ name | ORPHRASE }}
 

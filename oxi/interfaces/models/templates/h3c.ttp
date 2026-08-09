@@ -19,18 +19,18 @@ default_system = {
 # BOARD TYPE: {{ model }}
 </group>
 
-<group name="interfaces">
+<group name="interfaces*">
 interface {{ interface }}
  description {{ description | ORPHRASE }}
  ip address {{ ip_address }} {{ mask | to_cidr }}
  shutdown {{ shutdown | set(True) }}
 </group>
 
-<group name="vlans">
+<group name="vlans*">
 vlan {{ vlan_id }}
  name {{ name }}
  description {{ description }}
 </group>
-<group name="vlans">
+<group name="vlans*">
 vlan {{ vlans_id | ORPHRASE | contains(" to ") | unrange(" to ", ",") | split(",") }}
 </group>
