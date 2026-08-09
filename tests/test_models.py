@@ -17,6 +17,7 @@ MODEL_CASES = [
     ("quasar", "config_1.conf", "config_1.expected.json"),
     ("quasar", "config_2.conf", "config_2.expected.json"),
     ("ruijie", "config.conf", "config.expected.json"),
+    ("orion", "config.conf", "config.expected.json"),
 ]
 
 

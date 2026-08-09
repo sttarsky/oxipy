@@ -25,8 +25,12 @@ default_system = {
 </vars>
 
 <group name="system" default="default_system">
+## Ruijie: model in parentheses, vendor after "By"
 ! System description      : {{ description | ORPHRASE }}({{ model }}) By {{ vendor | ORPHRASE }}
-! System software version : {{ _ignore_}} {{ version | ORPHRASE }}
+## Orion: plain description without parentheses (also a start line, so the
+! System description      : {{ model | re("[^(\n]+") | strip() | _start_ }}
+
+! System software version : {{ ignore }} {{ version | strip(",") }}{{ ignore('.*') }}
 ! System serial number    : {{ serial_number }}
 </group>
 

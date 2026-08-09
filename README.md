@@ -367,6 +367,8 @@ case-insensitively.
 | Eltex | `eltex` |
 | H3C | `h3c` |
 | Quasar | `qos`, `quasar` |
+| Ruijie Networks | `ruijie networks`, `ruijie`, `rgos` |
+| Orion Networks | `orion`, `orion networks` , `orion os`, `oos`|
 
 If your Oxidized installation uses a different `model` value for one of these
 devices, map it with [`api.add_alias`](#apiadd_aliasalias-model):
