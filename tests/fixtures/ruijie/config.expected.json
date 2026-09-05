@@ -41,6 +41,13 @@
       "shutdown": true
     },
     {
+      "interface": "VLAN 777",
+      "ip_address": "192.168.1.200",
+      "mask": 24,
+      "description": null,
+      "shutdown": false
+    },
+    {
       "interface": "Mgmt 0",
       "ip_address": "192.168.1.253",
       "mask": 24,
