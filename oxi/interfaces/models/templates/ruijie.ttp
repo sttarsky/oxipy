@@ -38,7 +38,8 @@ default_system = {
 interface {{ interface | ORPHRASE }}
  description {{ description | ORPHRASE }}
  shutdown {{ shutdown | set(True) }}
- ip address {{ ip_address }} {{ mask | to_cidr }}
+ ip address {{ ip_address | is_ip }} {{ mask | to_cidr }}
+ ip address mix {{ ip_address | is_ip }} {{ mask | to_cidr }}
 </group>
 
 <group name="vlans*">
